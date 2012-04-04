@@ -1,13 +1,13 @@
 package com.siondream.freegemas;
 
-import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
+import com.badlogic.gdx.backends.jogl.JoglApplication;
 
 public class DesktopStarter {
 	public static void main (String[] args) {
-		new LwjglApplication(new Freegemas(),
-							 "Freegemas",
-							 1280,
-							 720,
-							 false);
+		new JoglApplication(new Freegemas(),
+							"Freegemas",
+							1280,
+							720,
+							true);
 	}
 }
