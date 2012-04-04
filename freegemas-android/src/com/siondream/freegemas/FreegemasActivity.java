@@ -9,6 +9,6 @@ public class FreegemasActivity extends AndroidApplication {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initialize(new Freegemas(), false);
+        initialize(new Freegemas(), true);
     }
 }
