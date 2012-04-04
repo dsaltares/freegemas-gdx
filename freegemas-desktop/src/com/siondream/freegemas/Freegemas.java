@@ -113,4 +113,8 @@ public class Freegemas implements ApplicationListener {
 	public AssetManager getAssetManager() {
 		return _assetManager;
 	}
+
+	public SpriteBatch getSpriteBatch() {
+		return _batch;
+	}
 }
