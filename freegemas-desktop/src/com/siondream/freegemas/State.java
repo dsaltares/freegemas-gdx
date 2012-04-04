@@ -70,4 +70,8 @@ public class State implements InputProcessor {
 	public void unload() {
 	
 	}
+	
+	public void assignResources() {
+		_parent.getAssetManager().finishLoading();
+	}
 }

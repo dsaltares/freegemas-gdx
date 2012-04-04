@@ -32,10 +32,10 @@ public class Freegemas implements ApplicationListener {
 		_states = new HashMap<String, State>();
 		
 		// Create states
+		_states.put("StateGame", new StateGame(this));
 		
 		// Asign initial state
-		
-		// Load initial state
+		changeState("StateGame");
 		
 		// Load general assets
 		_assetManager.load("data/handCursor.png", Texture.class);
@@ -95,8 +95,10 @@ public class Freegemas implements ApplicationListener {
 		State newState = _states.get(stateName);
 		
 		if (newState != null) {
-			// Unload old state
-			_currentState.unload();
+			// Unload old state if there was one
+			if (_currentState != null) {
+				_currentState.unload();
+			}
 			
 			// Assign new state
 			_currentState = newState;

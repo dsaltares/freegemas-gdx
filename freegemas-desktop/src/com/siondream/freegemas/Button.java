@@ -6,14 +6,14 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 
 public class Button {
 	private Freegemas _game;
-	private float _x;
-	private float _y;
+	private int _x;
+	private int _y;
 	private Texture _background;
 	private Texture _icon;
 	private String _text;
 	private BitmapFont _font;
 	
-	public Button(Freegemas game, float x, float y, Texture background, Texture icon, BitmapFont font, String text) {
+	public Button(Freegemas game, int x, int y, String text, Texture background, Texture icon, BitmapFont font) {
 		_game = game;
 		_x = x;
 		_y = y;
@@ -21,6 +21,16 @@ public class Button {
 		_icon = icon;
 		_font = font;
 		_text = text;
+	}
+	
+	public Button(Freegemas game, int x, int y, String text) {
+		_game = game;
+		_x = x;
+		_y = y;
+		_text = text;
+		_background = null;
+		_icon = null;
+		_font = null;
 	}
 	
 	public void render() {
@@ -42,23 +52,23 @@ public class Button {
 		}
 	}
 	
-	public float getX() {
+	public int getX() {
 		return _x;
 	}
 	
-	public float getY() {
+	public int getY() {
 		return _y;
 	}
 	
-	public void setX(float x) {
+	public void setX(int x) {
 		_x = x;
 	}
 	
-	public void setY(float y) {
+	public void setY(int y) {
 		_y = y;
 	}
 	
-	public void setPosition(float x, float y) {
+	public void setPosition(int x, int y) {
 		_x = x;
 		_y = y;
 	}
@@ -69,5 +79,17 @@ public class Button {
 	
 	public void setText(String text) {
 		_text = text;
+	}
+	
+	public void setIcon(Texture icon) {
+		_icon = icon;
+	}
+	
+	public void setBackground(Texture background) {
+		_background = background;
+	}
+	
+	public void setFont(BitmapFont font) {
+		_font = font;
 	}
 }
