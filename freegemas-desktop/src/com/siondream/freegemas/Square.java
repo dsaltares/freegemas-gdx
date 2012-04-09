@@ -1,7 +1,14 @@
 package com.siondream.freegemas;
 
 public class Square {
-	enum Type {sqEmpty, sqWhite, sqRed, sqPurple, sqOrange, sqGreen, sqYellow, sqBlue};
+	public enum Type {sqEmpty,
+					  sqWhite,
+					  sqRed,
+					  sqPurple,
+					  sqOrange,
+					  sqGreen,
+					  sqYellow,
+					  sqBlue};
 	
 	public int origY;
 	public int destY;

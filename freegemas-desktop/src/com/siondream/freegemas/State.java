@@ -11,7 +11,7 @@ public class State implements InputProcessor {
 	
 	// GAME LOOP
 	
-	public void update() {
+	public void update(double deltaT) {
 	
 	}
 	

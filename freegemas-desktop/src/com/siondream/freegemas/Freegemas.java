@@ -6,8 +6,10 @@ import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.graphics.GL10;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.utils.TimeUtils;
 
 public class Freegemas implements ApplicationListener {
 	
@@ -19,9 +21,14 @@ public class Freegemas implements ApplicationListener {
 	private AssetManager _assetManager = null;
 	
 	private SpriteBatch _batch = null;
+	private OrthographicCamera _camera = null;
 	
 	// Mouse pointer
 	private Texture _mouseTexture = null;
+	
+	// Time control
+	private double _time0;
+	private double _time1;
 	
 	@Override
 	public void create() {
@@ -47,8 +54,16 @@ public class Freegemas implements ApplicationListener {
 		// Sprite batch
 		_batch = new SpriteBatch();
 		
+		// Ortographic camera
+		_camera = new OrthographicCamera(1280, 720);
+		_camera.position.set(1270 / 2, 720 / 2, 0);
+		
 		// Mouse hidden
 		Gdx.input.setCursorCatched(true);
+		
+		// Time control
+		_time0 = TimeUtils.millis();
+		_time1 = _time0;
 	}
 
 	@Override
@@ -66,11 +81,17 @@ public class Freegemas implements ApplicationListener {
 		Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
+		// Set camera
+		_batch.setProjectionMatrix(_camera.projection);
+		
+		// Start batch in case we need some debug rendering in update
+		_camera.update();
+		_batch.setProjectionMatrix(_camera.combined);
 		_batch.begin();
 		
 		// Update and render current state
 		if (_currentState != null) {
-			_currentState.update();
+			_currentState.update(_time1 - _time0);
 			_currentState.render();
 		}
 		
@@ -78,6 +99,10 @@ public class Freegemas implements ApplicationListener {
 		_batch.draw(_mouseTexture, Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
 		
 		_batch.end();
+		
+		// Update time control
+		_time0 = _time1;
+		_time1 = TimeUtils.millis();
 	}
 
 	@Override

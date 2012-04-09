@@ -12,6 +12,15 @@ public class Board {
 		_squares = new Square[8][8];
 	}
 	
+	public Square getSquare(int x, int y) {
+		if (x < 0 || x > 7 || y < 0 || y > 7) {
+			return null;
+		}
+		else {
+			return _squares[x][y];
+		}
+	}
+	
 	public void swap(int x1, int y1, int x2, int y2) {
 		if (x1 >= 0 && x1 < 8 &&
 			y1 >= 0 && y1 < 8 &&
@@ -43,14 +52,14 @@ public class Board {
 	                _squares[i][j].origY = MathUtils.random(-7, -1);
 	                _squares[i][j].destY = j - _squares[i][j].origY;
 				}
-				
-				if (!check().isEmpty()) {
-					repeat = true;
-				}
-				
-				else if (solutions().isEmpty()) {
-					repeat = true;
-				}
+			}
+			
+			/*if (!check().isEmpty()) {
+				repeat = true;
+			}
+			
+			else */if (solutions().isEmpty()) {
+				repeat = true;
 			}
 		} while(repeat);
 	}
