@@ -12,6 +12,14 @@ public class Board {
 		_squares = new Square[8][8];
 	}
 	
+	public Board(Board other) {
+		for (int i = 0; i < 8; ++i) {
+			for (int j = 0; j < 8; ++j) {
+				_squares[i][j] = new Square(other._squares[i][j]);
+			}
+		}
+	}
+	
 	public Square getSquare(int x, int y) {
 		if (x < 0 || x > 7 || y < 0 || y > 7) {
 			return null;
@@ -19,6 +27,10 @@ public class Board {
 		else {
 			return _squares[x][y];
 		}
+	}
+	
+	public Square[][] getSquares() {
+		return _squares;
 	}
 	
 	public void swap(int x1, int y1, int x2, int y2) {
@@ -47,7 +59,7 @@ public class Board {
 		do {
 			for (int i = 0; i < 8; ++i) {
 				for (int j = 0; j < 8; ++j) {
-					_squares[i][j] = new Square(Square.numToType(MathUtils.random(0, 7)));
+					_squares[i][j] = new Square(Square.numToType(MathUtils.random(0, 6)));
 	                _squares[i][j].mustFall = true;
 	                _squares[i][j].origY = MathUtils.random(-7, -1);
 	                _squares[i][j].destY = j - _squares[i][j].origY;

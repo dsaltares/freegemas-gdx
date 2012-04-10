@@ -48,7 +48,7 @@ public class Button {
 		
 		if (_font != null)
 		{
-			_font.draw(batch, _text, _x + 20, _y + 5);
+			_font.draw(batch, _text, _x + 45, _y + 32);
 		}
 	}
 	

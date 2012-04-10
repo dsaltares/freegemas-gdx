@@ -4,9 +4,11 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
+import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.MathUtils;
 
 public class StateGame extends State {
 
@@ -15,7 +17,7 @@ public class StateGame extends State {
 		InitialGems,
 		Wait,
 		SelectedGem,
-		ChangingGmes,
+		ChangingGems,
 		DisappearingGems,
 		FallingGems,
 		DisappearingBoard,
@@ -98,6 +100,8 @@ public class StateGame extends State {
 
 	private String _txtTime;
 	
+	private SpriteBatch _colouredBatch;
+	
 	public StateGame(Freegemas freegemas) {
 		super(freegemas);
 		
@@ -109,16 +113,21 @@ public class StateGame extends State {
 		_loadingTexture = assetManager.get("data/loadingBanner.png", Texture.class);
 		
 		// Create buttons
-		_hintButton = new Button(_parent, 0, 0, "Hint");
-		_resetButton = new Button(_parent, 0, 0, "Reset");
-		_exitButton = new Button(_parent, 0, 0, "Exit");
-		_musicButton = new Button(_parent, 0, 0, "Music");
+		_hintButton = new Button(_parent, 130, 250, "Hint");
+		_resetButton = new Button(_parent, 130, 200, "Reset");
+		_exitButton = new Button(_parent, 130, 150, "Exit");
+		_musicButton = new Button(_parent, 130, 100, "Music");
 		
 		// Creare board
 		_board = new Board();
 		
-		// Reset game
-		resetGame();
+		// Time txt
+		_txtTime = new String("");
+		
+		_colouredBatch = new SpriteBatch();
+		
+		// Init game for the first time
+		init();
 	}
 	
 	@Override
@@ -331,7 +340,7 @@ public class StateGame extends State {
 		// INITIAL GAME STATE
 		if (_state == State.InitialGems) {
 			// If animation ended
-			if (++_animStep == _animTotal) {
+			if (++_animStep == _animTotalInit) {
 				// Switch to next state (waiting for user input)
 				_state = State.Wait;
 				_board.endAnimation();
@@ -348,7 +357,7 @@ public class StateGame extends State {
 		}
 		
 		// SWAPPING GEMS STATE
-		if (_state == State.ChangingGmes) {
+		if (_state == State.ChangingGems) {
 			// When animation ends
 			if (++_animStep == _animTotal) {
 				// Switch to next state, gems start to disappear
@@ -497,6 +506,8 @@ public class StateGame extends State {
 	@Override
 	public void render() {
 		SpriteBatch batch = _parent.getSpriteBatch();
+		//_colouredBatch.setProjectionMatrix(_parent.getCamera().combined);
+		//_colouredBatch.begin();
 		
 		// STATE LOADING
 		if (_state == State.Loading) {
@@ -515,26 +526,36 @@ public class StateGame extends State {
 		_exitButton.render();
 		
 		// Draw the score
+		batch.draw(_scoreBackground, 130, 470);
+		_fontScore.draw(batch,
+						new String("" + _points),
+						318 - _fontScore.getBounds(new String("" + _points)).width,
+						506);
 		
 		// Draw the time
+		batch.draw(_timeBackground, 130, 350);
+		_fontTime.draw(batch,
+				_txtTime,
+				310 - _fontTime.getBounds(_txtTime).width,
+				408);
 		
 		// Draw each score little message
 		
 		// Draw particle systems
 		
 		// Draw board
-		int posX = 241;
-		int posY = 41;
+		int posX = 490;
+		int posY = 576;
 		Texture img = null;
 		
 		if (_state != State.ShowingScoreTable) {
 			// Go through all of the squares
-	        for(int i = 0; i < 8; ++i) {
-	            for(int j = 0; j < 8; ++j) {
+	        for (int i = 0; i < 8; ++i) {
+	            for (int j = 0; j < 8; ++j) {
 
 	                // Check the type of each square and
 	                // save the proper image in the img pointer
-	                switch(_board.getSquare(i, j).getType()){
+	                switch (_board.getSquare(i, j).getType()) {
 	                case sqWhite:
 	                    img = _whiteTexture;
 	                    break;
@@ -564,10 +585,93 @@ public class StateGame extends State {
 	                    break;
 
 	                } // switch end
+	                
+	             // Now, if img is not NULL (there's something to draw)
+	                if (img != null) {
+	                    // Default positions
+	                    float imgX = posX + i * 76;
+	                    float imgY = posY - j * 76;
+
+	                    // Default color
+	                    Color imgColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+	                    
+	                    // In the initial state, the gems fall vertically
+	                    // decreasing its speed
+	                    if (_state == State.InitialGems) {
+	                        imgY = Animation.easeOutQuad(_animStep,
+							                             _board.getSquares()[i][j].origY * 76,
+							                             _board.getSquares()[i][j].destY * 76,
+							                             _animTotalInit);                            
+	                    }
+
+	                    // In the ending states, gems fall vertically, 
+	                    // increasing their speed
+	                    else if (_state == State.DisappearingBoard || _state == State.TimeFinished) {
+	                        imgY = Animation.easeInQuad(_animStep,
+							                            posY + _board.getSquares()[i][j].origY * 76,
+							                            _board.getSquares()[i][j].destY * 76,
+							                            _animTotal); 
+	                    }
+
+	                    else if ((_state == State.Wait ||
+	                    		  _state == State.SelectedGem ||
+	                    		  _state == State.FallingGems)
+	                    		  && _board.getSquare(i, j).mustFall) {
+	                        
+	                    	imgY = Animation.easeOutQuad(_animStep,
+							                             posY + _board.getSquares()[i][j].origY * 76,
+							                             _board.getSquares()[i][j].destY * 76,
+							                             _animTotal); 
+	                    }                    
+
+	                    // When two gems are switching
+	                    else if (_state == State.ChangingGems) {
+	                        if(i == _selectedSquareFirst.x &&  j == _selectedSquareFirst.y) {
+
+	                            imgX = Animation.easeOutQuad(_animStep,
+	                            		                     posX + i * 76,
+	                            		                     (_selectedSquareSecond.x - _selectedSquareFirst.x) * 76,
+	                            		                     _animTotal);
+
+	                            imgY = Animation.easeOutQuad(_animStep,
+	                            							 posY + j * 76,
+	                            							 (_selectedSquareSecond.y - _selectedSquareFirst.y) * 76,
+	                            							 _animTotal);
+
+	                        }
+
+	                        else if (i == _selectedSquareSecond.x && j == _selectedSquareSecond.y){
+
+	                            imgX = Animation.easeOutQuad(_animStep,
+	                            							 posX + i * 76,
+	                            							 (_selectedSquareFirst.x - _selectedSquareSecond.x) * 76,
+	                            							 _animTotal);
+
+	                            imgY = Animation.easeOutQuad(_animStep,
+	                            							 posY + j * 76,
+	                            							 (_selectedSquareFirst.y - _selectedSquareSecond.y) * 76,
+	                            							 _animTotal);
+	                        }
+	                    }
+	                    
+	                    else if (_state == State.DisappearingGems) {
+	                    	// Winning gems disappearing
+	                    	if (_groupedSquares.isMatched(new Coord(i, j))) {
+	                    		imgColor = new Color(1.0f, 1.0f, 1.0f, (1.0f - (float)_animStep/_animTotal));
+	                    	}
+	                    }
+	                    
+	                    // Finally draw the image
+	                    batch.setColor(imgColor);
+	                    batch.draw(img, imgX, imgY);
+	                    batch.setColor(new Color(1.0f, 1.0f, 1.0f, 1.0f));
+
+	                } // End if (img != NULL)
+	                
+	                img = null;
 	            }
 	        }       
 		}
-		
 	}
 	
 	@Override
@@ -591,19 +695,45 @@ public class StateGame extends State {
 	}
 	
 	private void gemsOutScreen() {
-		
+	    for(int x = 0; x < 8; ++x){
+	        for(int y = 0; y < 8; ++y){
+	            _board.getSquare(x, y).mustFall = true;
+	            _board.getSquare(x, y).origY = y;
+	            _board.getSquare(x, y).destY = 9 + MathUtils.random(1, 7);
+	        }
+	    }
 	}
 	
 	private void init() {
-		
+		// Initial animation state
+	    _animStep = 0;
+
+	    // Steps for short animations
+	    _animTotal = 17;
+
+	    // Steps for long animations
+	    _animTotalInit = 50;
+
+	    // Steps for the hint animation
+	    _totalAnimHint = 50;
+
+	    // Reset the hint flag
+	    _showingHint = -1;
+
+	    // Initial score multiplier
+	    _multiplier = 1;
+
+	    // Reset the game to the initial values
+	    resetGame();
 	}
 	
 	private boolean overGem(int mX, int mY) {
-		return false;
+		return (mX > 490 && mX < 490 + 76 * 8 &&
+	            mY < 576 && mY > 576 - 76 * 8);
 	}
 	
 	private Coord getCoord(int mX, int mY) {
-		return new Coord(0, 0);
+		return new Coord((mX - 490) / 76, (mY + 576) / 76);
 	}
 	
 	private void redrawScoreBoard() {
@@ -615,7 +745,26 @@ public class StateGame extends State {
 	}
 	
 	private boolean checkClickedSquare(int mX, int mY) {
-		return false;
+	    _selectedSquareSecond = getCoord(mX, mY);
+
+	    // If gem is neighbour
+	    if(Math.abs(_selectedSquareFirst.x - _selectedSquareSecond.x) 
+	       + Math.abs(_selectedSquareFirst.y - _selectedSquareSecond.y) == 1){ 
+
+	        Board temporal = new Board(_board);
+	        temporal.swap(_selectedSquareFirst.x, _selectedSquareFirst.y,
+	                      _selectedSquareSecond.x, _selectedSquareSecond.y);
+
+	        _groupedSquares = temporal.check();
+
+	        // If winning movement
+	        if (!_groupedSquares.isEmpty()) {
+	            _state = State.ChangingGems;
+	            return true;
+	        }
+	    }
+
+	    return false;
 	}
 	
 	private void showHint() {
@@ -646,8 +795,5 @@ public class StateGame extends State {
 		
 		// Restart the time (two minutes)
 		_remainingTime = 2 * 60 * 1000; 
-		
-		// Reset multiplier
-		_multiplier = 0;
 	}
 }

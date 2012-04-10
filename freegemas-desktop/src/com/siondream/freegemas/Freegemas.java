@@ -2,6 +2,8 @@ package com.siondream.freegemas;
 
 import java.util.HashMap;
 
+import aurelienribon.tweenengine.TweenManager;
+
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
@@ -19,6 +21,9 @@ public class Freegemas implements ApplicationListener {
 	
 	// Assets
 	private AssetManager _assetManager = null;
+	
+	// Tween manager
+	//TweenManager _tweenManager = null;
 	
 	private SpriteBatch _batch = null;
 	private OrthographicCamera _camera = null;
@@ -38,6 +43,12 @@ public class Freegemas implements ApplicationListener {
 		// Create states table
 		_states = new HashMap<String, State>();
 		
+		// Create tween manager
+		//_tweenManager = new TweenManager();
+		
+		// Init animation system
+		Animation.init();
+		
 		// Create states
 		_states.put("StateGame", new StateGame(this));
 		
@@ -56,7 +67,7 @@ public class Freegemas implements ApplicationListener {
 		
 		// Ortographic camera
 		_camera = new OrthographicCamera(1280, 720);
-		_camera.position.set(1270 / 2, 720 / 2, 0);
+		_camera.position.set(1280 / 2, 720 / 2, 0);
 		
 		// Mouse hidden
 		Gdx.input.setCursorCatched(true);
@@ -82,16 +93,19 @@ public class Freegemas implements ApplicationListener {
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
 		// Set camera
-		_batch.setProjectionMatrix(_camera.projection);
+		//_batch.setProjectionMatrix(_camera.projection);
 		
 		// Start batch in case we need some debug rendering in update
 		_camera.update();
 		_batch.setProjectionMatrix(_camera.combined);
 		_batch.begin();
 		
+		double deltaT = _time1 - _time0;
+		
 		// Update and render current state
 		if (_currentState != null) {
-			_currentState.update(_time1 - _time0);
+			_currentState.update(deltaT);
+			//_tweenManager.update((int)deltaT);
 			_currentState.render();
 		}
 		
@@ -144,4 +158,12 @@ public class Freegemas implements ApplicationListener {
 	public SpriteBatch getSpriteBatch() {
 		return _batch;
 	}
+	
+	public OrthographicCamera getCamera() {
+		return _camera;
+	}
+	
+//	public TweenManager getTweenManager() {
+//		return _tweenManager;
+//	}
 }
