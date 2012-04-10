@@ -1,8 +1,6 @@
 package com.siondream.freegemas;
 
-import aurelienribon.tweenengine.TweenAccessor;
-
-public class Square implements TweenAccessor<Square> {
+public class Square  {
 	public enum Type {sqEmpty,
 					  sqWhite,
 					  sqRed,
@@ -63,15 +61,5 @@ public class Square implements TweenAccessor<Square> {
 		default:
 			return Type.sqEmpty;
 		}
-	}
-
-	@Override
-	public int getValues(Square arg0, int arg1, float[] arg2) {
-		return 0;
-	}
-
-	@Override
-	public void setValues(Square arg0, int arg1, float[] arg2) {
-		
 	}
 }

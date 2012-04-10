@@ -1,9 +1,6 @@
 package com.siondream.freegemas;
 
 import java.util.HashMap;
-
-import aurelienribon.tweenengine.TweenManager;
-
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
@@ -22,9 +19,6 @@ public class Freegemas implements ApplicationListener {
 	// Assets
 	private AssetManager _assetManager = null;
 	
-	// Tween manager
-	//TweenManager _tweenManager = null;
-	
 	private SpriteBatch _batch = null;
 	private OrthographicCamera _camera = null;
 	
@@ -42,9 +36,6 @@ public class Freegemas implements ApplicationListener {
 		
 		// Create states table
 		_states = new HashMap<String, State>();
-		
-		// Create tween manager
-		//_tweenManager = new TweenManager();
 		
 		// Init animation system
 		Animation.init();
@@ -92,9 +83,6 @@ public class Freegemas implements ApplicationListener {
 		Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
 		
-		// Set camera
-		//_batch.setProjectionMatrix(_camera.projection);
-		
 		// Start batch in case we need some debug rendering in update
 		_camera.update();
 		_batch.setProjectionMatrix(_camera.combined);
@@ -105,7 +93,6 @@ public class Freegemas implements ApplicationListener {
 		// Update and render current state
 		if (_currentState != null) {
 			_currentState.update(deltaT);
-			//_tweenManager.update((int)deltaT);
 			_currentState.render();
 		}
 		
