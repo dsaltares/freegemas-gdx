@@ -7,5 +7,6 @@
 	<classpathentry kind="lib" path="libs/gdx.jar"/>
 	<classpathentry kind="lib" path="libs/gdx-backend-jogl-natives.jar"/>
 	<classpathentry kind="lib" path="libs/gdx-backend-jogl.jar"/>
+	<classpathentry kind="lib" path="libs/tween-engine-api.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
