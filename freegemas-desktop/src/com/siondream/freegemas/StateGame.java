@@ -688,7 +688,7 @@ public class StateGame extends State {
 	
 	@Override
 	public boolean touchDown(int arg0, int arg1, int arg2, int arg3) {
-		System.out.println("Touch down");
+		System.out.println("Touch down in " + arg0 + ", " + arg1 + ", " + arg2 + ", " + arg3);
 		return false;
 	}
 

@@ -129,8 +129,9 @@ public class Freegemas implements ApplicationListener {
 			// Assign new state
 			_currentState = newState;
 			
-			// Load new state
+			// Load new state and register as input processor
 			_currentState.load();
+			Gdx.input.setInputProcessor(_currentState);
 		
 			return true;
 		}
