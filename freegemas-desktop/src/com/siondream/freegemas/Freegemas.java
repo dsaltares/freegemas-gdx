@@ -8,6 +8,7 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.TimeUtils;
 
 public class Freegemas implements ApplicationListener {
@@ -24,6 +25,7 @@ public class Freegemas implements ApplicationListener {
 	
 	// Mouse pointer
 	private Texture _mouseTexture = null;
+	private Vector3 _mousePos = null;
 	
 	// Time control
 	private double _time0;
@@ -52,6 +54,7 @@ public class Freegemas implements ApplicationListener {
 		
 		// Get assets
 		_mouseTexture = _assetManager.get("data/handCursor.png", Texture.class);
+		_mousePos = new Vector3();
 		
 		// Sprite batch
 		_batch = new SpriteBatch();
@@ -97,7 +100,10 @@ public class Freegemas implements ApplicationListener {
 		}
 		
 		// Render mouse on top
-		_batch.draw(_mouseTexture, Gdx.input.getX(), Gdx.graphics.getHeight() - Gdx.input.getY());
+		_mousePos.x = Gdx.input.getX();
+		_mousePos.y = Gdx.input.getY();
+		_camera.unproject(_mousePos);
+		_batch.draw(_mouseTexture, _mousePos.x, /*Gdx.graphics.getHeight() - */_mousePos.y);
 		
 		_batch.end();
 		
