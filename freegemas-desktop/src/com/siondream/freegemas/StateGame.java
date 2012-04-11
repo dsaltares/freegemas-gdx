@@ -599,7 +599,7 @@ public class StateGame extends State {
 	                    // decreasing its speed
 	                    if (_state == State.InitialGems) {
 	                        imgY = Animation.easeOutQuad(_animStep,
-							                             _board.getSquares()[i][j].origY * 76,
+							                             posY - _board.getSquares()[i][j].origY * 76,
 							                             _board.getSquares()[i][j].destY * 76,
 							                             _animTotalInit);                            
 	                    }
@@ -619,7 +619,7 @@ public class StateGame extends State {
 	                    		  && _board.getSquare(i, j).mustFall) {
 	                        
 	                    	imgY = Animation.easeOutQuad(_animStep,
-							                             posY + _board.getSquares()[i][j].origY * 76,
+							                             _board.getSquares()[i][j].origY * 76,
 							                             _board.getSquares()[i][j].destY * 76,
 							                             _animTotal); 
 	                    }                    
@@ -676,21 +676,25 @@ public class StateGame extends State {
 	
 	@Override
 	public boolean keyDown(int arg0) {
+		System.out.println("Key down");
 		return false;
 	}
 	
 	@Override
 	public boolean keyUp(int arg0) {
+		System.out.println("Key up");
 		return false;
 	}
 	
 	@Override
 	public boolean touchDown(int arg0, int arg1, int arg2, int arg3) {
+		System.out.println("Touch down");
 		return false;
 	}
 
 	@Override
 	public boolean touchUp(int arg0, int arg1, int arg2, int arg3) {
+		System.out.println("Touch up");
 		return false;
 	}
 	
