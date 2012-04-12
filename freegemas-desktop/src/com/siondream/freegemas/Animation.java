@@ -20,9 +20,9 @@ public class Animation {
     public enum Attribute {None, Alpha, Position, AlphaPosition};
     
     private int _numAttributes;
-    private int _duration;
-    private int _delay;
-    private int _time;
+    private double _duration;
+    private double _delay;
+    private double _time;
     private int _initial[];
     private int _final[];
     private int _change[];
@@ -38,22 +38,22 @@ public class Animation {
     	Class<Animation> animClass = Animation.class;
     	
     	try {
-			_animMethods.put(Type.EaseInQuad, animClass.getMethod("easeInQuad", new Class[]{float.class, float.class, float.class, float.class}));
-			_animMethods.put(Type.EaseOutQuad, animClass.getMethod("easeOutQuad", new Class[]{float.class, float.class, float.class, float.class}));
-			_animMethods.put(Type.EaseInCubic, animClass.getMethod("easeInCubic", new Class[]{float.class, float.class, float.class, float.class}));
-			_animMethods.put(Type.EaseOutCubic, animClass.getMethod("easeOutCubic", new Class[]{float.class, float.class, float.class, float.class}));
-			_animMethods.put(Type.EaseInOutCubic, animClass.getMethod("easeInOutCubic", new Class[]{float.class, float.class, float.class, float.class}));
-			_animMethods.put(Type.EaseInQuart, animClass.getMethod("easeInQuart", new Class[]{float.class, float.class, float.class, float.class}));
-			_animMethods.put(Type.EaseOutQuart, animClass.getMethod("easeOutQuart", new Class[]{float.class, float.class, float.class, float.class}));
-			_animMethods.put(Type.EaseInOutQuart, animClass.getMethod("easeInOutQuart", new Class[]{float.class, float.class, float.class, float.class}));
-			_animMethods.put(Type.EaseOutBack, animClass.getMethod("easeOutBack", new Class[]{float.class, float.class, float.class, float.class}));
-			_animMethods.put(Type.Linear, animClass.getMethod("easeLinear", new Class[]{float.class, float.class, float.class, float.class}));
+			_animMethods.put(Type.EaseInQuad, animClass.getMethod("easeInQuad", new Class[]{double.class, float.class, float.class, double.class}));
+			_animMethods.put(Type.EaseOutQuad, animClass.getMethod("easeOutQuad", new Class[]{double.class, float.class, float.class, double.class}));
+			_animMethods.put(Type.EaseInCubic, animClass.getMethod("easeInCubic", new Class[]{double.class, float.class, float.class, double.class}));
+			_animMethods.put(Type.EaseOutCubic, animClass.getMethod("easeOutCubic", new Class[]{double.class, float.class, float.class, double.class}));
+			_animMethods.put(Type.EaseInOutCubic, animClass.getMethod("easeInOutCubic", new Class[]{double.class, float.class, float.class, double.class}));
+			_animMethods.put(Type.EaseInQuart, animClass.getMethod("easeInQuart", new Class[]{double.class, float.class, float.class, double.class}));
+			_animMethods.put(Type.EaseOutQuart, animClass.getMethod("easeOutQuart", new Class[]{double.class, float.class, float.class, double.class}));
+			_animMethods.put(Type.EaseInOutQuart, animClass.getMethod("easeInOutQuart", new Class[]{double.class, float.class, float.class, double.class}));
+			_animMethods.put(Type.EaseOutBack, animClass.getMethod("easeOutBack", new Class[]{double.class, float.class, float.class, double.class}));
+			_animMethods.put(Type.Linear, animClass.getMethod("easeLinear", new Class[]{double.class, float.class, float.class, double.class}));
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
     }
     
-    public Animation(int numAttributes, int duration, Type type, int delay) {
+    public Animation(int numAttributes, double duration, Type type, double delay) {
     	_numAttributes = numAttributes;
     	_duration = duration;
     	_type = type;
@@ -67,7 +67,7 @@ public class Animation {
     		Class<Animation> animClass = Animation.class;
     		try{
     		_method = animClass.getMethod("easeLinear",
-    									  new Class[]{float.class, float.class, float.class, float.class});
+    									  new Class[]{double.class, float.class, float.class, double.class});
     		} catch (Exception e) {
     			e.printStackTrace();
     		}
@@ -162,7 +162,7 @@ public class Animation {
     		Class<Animation> animClass = Animation.class;
     		try{
     		_method = animClass.getMethod("easeLinear",
-    									  new Class[]{float.class, float.class, float.class, float.class});
+    									  new Class[]{double.class, float.class, float.class, double.class});
     		} catch (Exception e) {
     			e.printStackTrace();
     		}
@@ -171,19 +171,19 @@ public class Animation {
     	return _method != null;
     }
     
-    public int getDuration() {
+    public double getDuration() {
     	return _duration;
     }
     
-    public void setDuration(int duration) {
+    public void setDuration(double duration) {
     	_duration = duration;
     }
     
-    public int getDelay() {
+    public double getDelay() {
     	return _delay; 
     }
     
-    public void setDelay(int delay) {
+    public void setDelay(double delay) {
     	_delay = delay;
     }
     
@@ -210,80 +210,80 @@ public class Animation {
 	    }
     }
     
-    public static float easeLinear(float t, float b, float c, float d) {
-    	return c * t / d + b;
+    public static float easeLinear(double t, float b, float c, double d) {
+    	return (float)(c * t / d + b);
     }
 
-    public static float easeInQuad (float t, float b, float c, float d) {
+    public static float easeInQuad (double t, float b, float c, double d) {
     	t /= d;
     	
-        return c * t * t + b;
+        return (float)(c * t * t + b);
     }
     
-    public static float easeOutQuad(float t, float b, float c, float d) {
+    public static float easeOutQuad(double t, float b, float c, double d) {
     	 t /= d;
     	 
-    	 return -c * (t) * (t - 2) + b;
+    	 return (float)(-c * (t) * (t - 2) + b);
     }
     
-    public static float easeInOutQuad(float t, float b, float c, float d) {
+    public static float easeInOutQuad(double t, float b, float c, double d) {
     	t /= d / 2;
         if (t < 1) {
-        	return c / 2 * t * t + b;
+        	return (float)(c / 2 * t * t + b);
         }
         else {
         	--t;
-        	return -c / 2 * ((t) * (t - 2) - 1) + b;
+        	return (float)(-c / 2 * ((t) * (t - 2) - 1) + b);
         }
     }
     
-    public static float easeInCubic(float t, float b, float c, float d) {
+    public static float easeInCubic(double t, float b, float c, double d) {
     	t /= d;
     	
-        return c * (t) * t * t + b;
+        return (float)(c * (t) * t * t + b);
     }
-    public static float easeOutCubic(float t, float b, float c, float d) {
+    public static float easeOutCubic(double t, float b, float c, double d) {
     	 t = t / d - 1;
     	 
-    	 return c * (t * t * t + 1) + b;
+    	 return (float)(c * (t * t * t + 1) + b);
     }
-    public static float easeInOutCubic(float t, float b, float c, float d) {
+    public static float easeInOutCubic(double t, float b, float c, double d) {
     	t /= d / 2;
         if ((t) < 1) {
-        	return c / 2 * t * t * t + b;
+        	return (float)(c / 2 * t * t * t + b);
         }
         else {
 	    	t-=2;
-	    	return c / 2 * ((t) * t * t + 2) + b;
+	    	return (float)(c / 2 * ((t) * t * t + 2) + b);
         }
     }
 
-    public static float easeInQuart(float t, float b, float c, float d) {
+    public static float easeInQuart(double t, float b, float c, double d) {
     	t /= d;
     	
-        return c * (t) * t * t * t + b;
+        return (float)(c * (t) * t * t * t + b);
     }
     
-    public static float easeOutQuart(float t, float b, float c, float d) {
+    public static float easeOutQuart(double t, float b, float c, double d) {
     	t = t /d - 1;
     	
-        return -c * ((t) * t * t * t - 1) + b;
+        return (float)(-c * ((t) * t * t * t - 1) + b);
     }
     
-    public static float easeInOutQuart(float t, float b, float c, float d) {
+    public static float easeInOutQuart(double t, float b, float c, double d) {
         t /= d / 2;
         if ((t) < 1) {
-        	return c / 2 * t * t * t * t + b;
+        	return (float)(c / 2 * t * t * t * t + b);
         }
         else {
 	    	t -= 2;
-	    	return -c / 2 * ((t) * t * t * t - 2) + b;
+	    	return (float)(-c / 2 * ((t) * t * t * t - 2) + b);
         }
     }
 
-    public static float easeOutBack(float t, float b, float c, float d) {
+    public static float easeOutBack(double t, float b, float c, double d) {
     	float s = 1.3f;
         t = t / d - 1;
-        return c * (t * t * ((s + 1) * t + s) + 1) + b;
+        return (float)(c * (t * t * ((s + 1) * t + s) + 1) + b);
     }
 }
