@@ -8,8 +8,7 @@ import com.badlogic.gdx.graphics.GL10;
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
-import com.badlogic.gdx.math.Vector3;
-import com.badlogic.gdx.utils.TimeUtils;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Freegemas implements ApplicationListener {
 	
@@ -18,18 +17,13 @@ public class Freegemas implements ApplicationListener {
 	private State _currentState = null;
 	
 	// Assets
-	private AssetManager _assetManager = null;
+	private static AssetManager _assetManager = null;
 	
-	private SpriteBatch _batch = null;
-	private OrthographicCamera _camera = null;
+	private static SpriteBatch _batch = null;
+	private static OrthographicCamera _camera = null;
 	
 	// Mouse pointer
-	private Texture _mouseTexture = null;
-	private Vector3 _mousePos = null;
-	
-	// Time control
-	private double _time0;
-	private double _time1;
+	private TextureRegion _imgMouse = null;
 	
 	@Override
 	public void create() {
@@ -42,33 +36,29 @@ public class Freegemas implements ApplicationListener {
 		// Init animation system
 		Animation.init();
 		
-		// Create states
-		_states.put("StateGame", new StateGame(this));
-		
-		// Asign initial state
-		changeState("StateGame");
-		
 		// Load general assets
 		_assetManager.load("data/handCursor.png", Texture.class);
 		_assetManager.finishLoading();
 		
 		// Get assets
-		_mouseTexture = _assetManager.get("data/handCursor.png", Texture.class);
-		_mousePos = new Vector3();
+		_imgMouse = new TextureRegion(_assetManager.get("data/handCursor.png", Texture.class));
+        _imgMouse.flip(false, true);
 		
 		// Sprite batch
 		_batch = new SpriteBatch();
 		
 		// Ortographic camera
-		_camera = new OrthographicCamera(1280, 720);
-		_camera.position.set(1280 / 2, 720 / 2, 0);
+		_camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
+		_camera.setToOrtho(true);
 		
 		// Mouse hidden
 		Gdx.input.setCursorCatched(true);
 		
-		// Time control
-		_time0 = TimeUtils.millis();
-		_time1 = _time0;
+		// Create states
+		_states.put("StateGame", new StateGame(this));
+		
+		// Asign initial state
+		changeState("StateGame");
 	}
 
 	@Override
@@ -83,38 +73,30 @@ public class Freegemas implements ApplicationListener {
 
 	@Override
 	public void render() {
-		Gdx.gl.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
-		Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+		// Clear the screen, update the camera and make the sprite batch
+        // use its matrices.
+        Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
+        _camera.update();
+        _batch.setProjectionMatrix(_camera.combined);
 		
-		// Start batch in case we need some debug rendering in update
-		_camera.update();
-		_batch.setProjectionMatrix(_camera.combined);
-		_batch.begin();
-		
-		double deltaT = _time1 - _time0;
+        // Start rendering
+        _batch.begin();
 		
 		// Update and render current state
 		if (_currentState != null) {
-			_currentState.update(deltaT);
+			_currentState.update(Gdx.graphics.getDeltaTime());
 			_currentState.render();
 		}
 		
 		// Render mouse on top
-		_mousePos.x = Gdx.input.getX();
-		_mousePos.y = Gdx.input.getY();
-		_camera.unproject(_mousePos);
-		_batch.draw(_mouseTexture, _mousePos.x, /*Gdx.graphics.getHeight() - */_mousePos.y);
+		_batch.draw(_imgMouse, Gdx.input.getX(), Gdx.input.getY());
 		
 		_batch.end();
-		
-		// Update time control
-		_time0 = _time1;
-		_time1 = TimeUtils.millis();
 	}
 
 	@Override
 	public void resize(int arg0, int arg1) {
-		
+		_camera.setToOrtho(true, arg0, arg1);
 	}
 
 	@Override
@@ -145,19 +127,15 @@ public class Freegemas implements ApplicationListener {
 		return false;
 	}
 	
-	public AssetManager getAssetManager() {
+	public static AssetManager getAssetManager() {
 		return _assetManager;
 	}
 
-	public SpriteBatch getSpriteBatch() {
+	public static SpriteBatch getSpriteBatch() {
 		return _batch;
 	}
 	
-	public OrthographicCamera getCamera() {
+	public static OrthographicCamera getCamera() {
 		return _camera;
 	}
-	
-//	public TweenManager getTweenManager() {
-//		return _tweenManager;
-//	}
 }
