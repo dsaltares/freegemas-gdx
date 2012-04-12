@@ -13,6 +13,8 @@ public class Board {
 	}
 	
 	public Board(Board other) {
+		_squares = new Square[8][8];
+		
 		for (int i = 0; i < 8; ++i) {
 			for (int j = 0; j < 8; ++j) {
 				_squares[i][j] = new Square(other._squares[i][j]);

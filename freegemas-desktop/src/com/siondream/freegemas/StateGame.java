@@ -12,6 +12,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
 public class StateGame extends State {
@@ -29,6 +30,8 @@ public class StateGame extends State {
 		ShowingScoreTable
 	};
 	
+	private static final Vector2 gemsInitial = new Vector2(490, 70);
+	
 	// Current game state
 	private State _state;
 	
@@ -39,16 +42,16 @@ public class StateGame extends State {
 	
 	// Hints
 	private int _showingHint;
-	private int _totalAnimHint;
+	private double _animHintTotalTime;
 	private Coord _coordHint;
 	
 	// Game board
 	private Board _board;
 	
 	// Animations
-	private int _animStep;
-	private int _animTotal;
-	private int _animTotalInit;
+	private double _animTime;
+	private double _animTotalTime;
+	private double _animTotalInitTime;
 	
 	// Points and gems matches
 	private MultipleMatch _groupedSquares;
@@ -122,6 +125,9 @@ public class StateGame extends State {
 		
 		// Time txt
 		_txtTime = new String("");
+		
+		_selectedSquareFirst = new Coord(-1, -1);
+		_selectedSquareSecond = new Coord(-1, -1);
 		
 		// Init game for the first time
 		init();
@@ -315,7 +321,6 @@ public class StateGame extends State {
 	
 	@Override
 	public void update(double deltaT) {
-		
 		// LOADING STATE
 		if (_state == State.Loading) {
 			// If we finish loading, assign resources and change to FirstFlip state
@@ -329,11 +334,10 @@ public class StateGame extends State {
 		
 		// Game time
 		_remainingTime -= deltaT;
-		
 		// If we are under the time limit, compute the string for the board
 		if (_remainingTime > 0) {
-			int minutes = (int)(_remainingTime / 60.0 / 1000.0);
-			int seconds = (int)(_remainingTime / 1000.0 - minutes * 60);
+			int minutes = (int)(_remainingTime / 60.0);
+			int seconds = (int)(_remainingTime - minutes * 60);
 			_txtTime = new String("" + minutes);
 			if (seconds < 10) {
 				_txtTime += new String(":0" + seconds);
@@ -361,13 +365,13 @@ public class StateGame extends State {
 		// INITIAL GAME STATE
 		if (_state == State.InitialGems) {
 			// If animation ended
-			if (++_animStep == _animTotalInit) {
+			if ((_animTime += deltaT) >= _animTotalInitTime) {
 				// Switch to next state (waiting for user input)
 				_state = State.Wait;
 				_board.endAnimation();
 				
 				// Reset animation step counter
-				_animStep = 0;
+				_animTime = 0;
 			}
 		}
 		
@@ -380,7 +384,7 @@ public class StateGame extends State {
 		// SWAPPING GEMS STATE
 		if (_state == State.ChangingGems) {
 			// When animation ends
-			if (++_animStep == _animTotal) {
+			if ((_animTime += deltaT) >= _animTotalTime) {
 				// Switch to next state, gems start to disappear
 				_state = State.DisappearingGems;
 				
@@ -400,14 +404,14 @@ public class StateGame extends State {
 				createFloatingScores();
 				
 				// Reset animation step
-				_animStep = 0;
+				_animTime = 0;
 			}
 		}
 	
 		// DISAPPEARING GEMS STATE
 		if (_state == State.DisappearingGems) {
 			// When anim ends
-			if (++_animStep == _animTotal) {
+			if ((_animTime += deltaT) >= _animTotalTime) {
 				// Switch to next state, gems falling
 				_state = State.FallingGems;
 				
@@ -432,14 +436,14 @@ public class StateGame extends State {
 				_board.fillSpaces();
 				
 				// Reset animation counter
-				_animStep = 0;
+				_animTime = 0;
 			}
 		}
 		
 		// GEMS FALLING STATE
 		if (_state == State.FallingGems) {
 			// When animation ends
-			if (++_animStep == _animTotal) {
+			if ((_animTime += deltaT) >= _animTotalTime) {
 				// Play the fall sound fx
 				_fallSFX.play();
 				
@@ -447,7 +451,7 @@ public class StateGame extends State {
 				_state = State.Wait;
 				
 				// Reset animation counter
-				_animStep = 0;
+				_animTime = 0;
 
 	            // Reset animation variables
 	            _board.endAnimation();
@@ -482,7 +486,7 @@ public class StateGame extends State {
 		// DISAPPEARING BOARD STATE because there were no possible movements
 	    else if(_state == State.DisappearingBoard) {
 	        // When animation ends
-	        if(++_animStep == _animTotal) {
+	        if((_animTime += deltaT) >= _animTotalTime) {
 	            // Switch to the initial state
 	            _state = State.InitialGems;
 
@@ -490,7 +494,7 @@ public class StateGame extends State {
 	            _board.generate();
 
 	            // Reset animation counter
-	            _animStep = 0;
+	            _animTime = 0;
 	        }
 	    }
 		
@@ -498,7 +502,7 @@ public class StateGame extends State {
 	    else if(_state == State.TimeFinished) {
 
 	        // When animation ends
-	        if(++_animStep == _animTotal){
+	        if((_animTime += deltaT) >= _animTotalTime){
 
 	            // Create a new score table
 	            // _scoreTable = new ScoreTable(_parent, _points);
@@ -507,7 +511,7 @@ public class StateGame extends State {
 	            _state = State.ShowingScoreTable;
 				 
 	            // Reset animation counter
-	            _animStep = 0;
+	            _animTime = 0;
 	        }
 	    }
 
@@ -563,8 +567,6 @@ public class StateGame extends State {
 		// Draw particle systems
 		
 		// Draw board
-		int posX = 490;
-		int posY = 576;
 		TextureRegion img = null;
 		
 		if (_state != State.ShowingScoreTable) {
@@ -608,8 +610,8 @@ public class StateGame extends State {
 	             // Now, if img is not NULL (there's something to draw)
 	                if (img != null) {
 	                    // Default positions
-	                    float imgX = posX + i * 76;
-	                    float imgY = posY - j * 76;
+	                    float imgX = gemsInitial.x + i * 76;
+	                    float imgY = gemsInitial.y + j * 76;
 
 	                    // Default color
 	                    Color imgColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
@@ -617,19 +619,19 @@ public class StateGame extends State {
 	                    // In the initial state, the gems fall vertically
 	                    // decreasing its speed
 	                    if (_state == State.InitialGems) {
-	                        imgY = Animation.easeOutQuad(_animStep,
-							                             posY - _board.getSquares()[i][j].origY * 76,
-							                             _board.getSquares()[i][j].destY * 76,
-							                             _animTotalInit);                            
+	                        imgY = Animation.easeOutQuad(_animTime,
+							                             gemsInitial.y - _board.getSquares()[i][j].origY * (-76),
+							                             _board.getSquares()[i][j].destY * (-76),
+							                             _animTotalInitTime);                            
 	                    }
 
 	                    // In the ending states, gems fall vertically, 
 	                    // increasing their speed
 	                    else if (_state == State.DisappearingBoard || _state == State.TimeFinished) {
-	                        imgY = Animation.easeInQuad(_animStep,
-							                            posY + _board.getSquares()[i][j].origY * 76,
+	                        imgY = Animation.easeInQuad(_animTime,
+	                        						     gemsInitial.y + _board.getSquares()[i][j].origY * 76,
 							                            _board.getSquares()[i][j].destY * 76,
-							                            _animTotal); 
+							                            _animTotalTime); 
 	                    }
 
 	                    else if ((_state == State.Wait ||
@@ -637,46 +639,46 @@ public class StateGame extends State {
 	                    		  _state == State.FallingGems)
 	                    		  && _board.getSquare(i, j).mustFall) {
 	                        
-	                    	imgY = Animation.easeOutQuad(_animStep,
+	                    	imgY = Animation.easeOutQuad(_animTime,
 							                             _board.getSquares()[i][j].origY * 76,
 							                             _board.getSquares()[i][j].destY * 76,
-							                             _animTotal); 
+							                             _animTotalTime); 
 	                    }                    
 
 	                    // When two gems are switching
 	                    else if (_state == State.ChangingGems) {
 	                        if(i == _selectedSquareFirst.x &&  j == _selectedSquareFirst.y) {
 
-	                            imgX = Animation.easeOutQuad(_animStep,
-	                            		                     posX + i * 76,
+	                            imgX = Animation.easeOutQuad(_animTime,
+	                            							 gemsInitial.x + i * 76,
 	                            		                     (_selectedSquareSecond.x - _selectedSquareFirst.x) * 76,
-	                            		                     _animTotal);
+	                            		                     _animTotalTime);
 
-	                            imgY = Animation.easeOutQuad(_animStep,
-	                            							 posY + j * 76,
+	                            imgY = Animation.easeOutQuad(_animTime,
+	                            							 gemsInitial.y + j * 76,
 	                            							 (_selectedSquareSecond.y - _selectedSquareFirst.y) * 76,
-	                            							 _animTotal);
+	                            							 _animTotalTime);
 
 	                        }
 
 	                        else if (i == _selectedSquareSecond.x && j == _selectedSquareSecond.y){
 
-	                            imgX = Animation.easeOutQuad(_animStep,
-	                            							 posX + i * 76,
+	                            imgX = Animation.easeOutQuad(_animTime,
+	                            							 gemsInitial.x + i * 76,
 	                            							 (_selectedSquareFirst.x - _selectedSquareSecond.x) * 76,
-	                            							 _animTotal);
+	                            							 _animTotalTime);
 
-	                            imgY = Animation.easeOutQuad(_animStep,
-	                            							 posY + j * 76,
+	                            imgY = Animation.easeOutQuad(_animTime,
+	                            							 gemsInitial.y + j * 76,
 	                            							 (_selectedSquareFirst.y - _selectedSquareSecond.y) * 76,
-	                            							 _animTotal);
+	                            							 _animTotalTime);
 	                        }
 	                    }
 	                    
 	                    else if (_state == State.DisappearingGems) {
 	                    	// Winning gems disappearing
 	                    	if (_groupedSquares.isMatched(new Coord(i, j))) {
-	                    		imgColor = new Color(1.0f, 1.0f, 1.0f, (1.0f - (float)_animStep/_animTotal));
+	                    		imgColor = new Color(1.0f, 1.0f, 1.0f, (1.0f - (float)(_animTime/_animTotalTime)));
 	                    	}
 	                    }
 	                    
@@ -688,6 +690,15 @@ public class StateGame extends State {
 	                } // End if (img != NULL)
 	                
 	                img = null;
+	            }
+	            
+	            // If the mouse is over a gem
+	            if (overGem(Gdx.input.getX(), Gdx.input.getY())) {
+	                // Draw the selector over that gem
+	            	Coord coord = getCoord(Gdx.input.getX(), Gdx.input.getY());
+	                batch.draw(_imgSelector,
+	                		  (int)gemsInitial.x + coord.x * 76,
+	                		  (int)gemsInitial.y + coord.y * 76);
 	            }
 	        }       
 		}
@@ -713,54 +724,27 @@ public class StateGame extends State {
 	        	System.out.println("Back to menu!");
 	            _parent.changeState("StateMenu");
 	        }
+	        
+	        else if (overGem(arg0, arg1)) { // Si se pulsó sobre una gema
+	            _selectSFX.play();
+
+	            if (_state == State.Wait) { // Si no hay ninguna gema marcada
+	                _state = State.SelectedGem;
+	                Coord coord = getCoord(arg0, arg1);
+	                _selectedSquareFirst.x = coord.x;
+	                _selectedSquareFirst.y = coord.y;
+	            }
+
+	            else if (_state == State.SelectedGem) { // Si ya había una gema marcada
+	                if (!checkClickedSquare(arg0, arg1)) {
+	                    _selectedSquareFirst.x = -1;
+	                    _selectedSquareFirst.y = -1;
+	                    _state = State.Wait;		    
+	                }
+	            }
+	        }
 		}
 
-//	        else if(hintButton -> clicked(mX, mY)){
-//	            showHint();
-//	        }
-//
-//	        else if(musicButton -> clicked(mX, mY)){
-//	            if(sfxSong -> playing()){
-//	                musicButton -> changeText(Gosu::widen(_("Turn on music")));
-//	                sfxSong -> stop();
-//	            }else{
-//	                musicButton -> changeText(Gosu::widen(_("Turn off music")));
-//	                sfxSong -> play(true);
-//	            }	    
-//	        }
-//	        else if (resetButton -> clicked(mX, mY)){
-//	            state = eDesapareceBoard;
-//	            gemsOutScreen();
-//	            resetGame();
-//		    
-//	        }
-//	        else if(overGem(mX, mY)){ // Si se pulsó sobre una gema
-//	            sfxSelect -> play(0.3);
-//
-//	            if(state == eEspera){ // Si no hay ninguna gema marcada
-//	                state = eGemaMarcada;
-//	                selectedSquareFirst.x = getCoord(mX, mY).x;
-//	                selectedSquareFirst.y = getCoord(mX, mY).y;
-//	            }
-//
-//	            else if(state == eGemaMarcada){ // Si ya había una gema marcada
-//	                if(!checkClickedSquare(mX, mY)){
-//	                    selectedSquareFirst.x = -1;
-//	                    selectedSquareFirst.y = -1;
-//	                    state = eEspera;		    
-//	                }
-//	            }
-//	        }
-//	    }
-//
-//	    else if(B == Gosu::kbH){
-//	        showHint();
-//	    }
-//
-//	    if(state == eShowingScoreTable){
-//	        scoreTable -> buttonDown(B);
-//	    }
-		
 		return false;
 	}
 
@@ -781,16 +765,16 @@ public class StateGame extends State {
 	
 	private void init() {
 		// Initial animation state
-	    _animStep = 0;
+	    _animTime = 0;
 
 	    // Steps for short animations
-	    _animTotal = 17;
+	    _animTotalTime = 0.0;
 
 	    // Steps for long animations
-	    _animTotalInit = 50;
+	    _animTotalInitTime = 1.0;
 
 	    // Steps for the hint animation
-	    _totalAnimHint = 50;
+	    _animHintTotalTime = 1.0;
 
 	    // Reset the hint flag
 	    _showingHint = -1;
@@ -803,12 +787,12 @@ public class StateGame extends State {
 	}
 	
 	private boolean overGem(int mX, int mY) {
-		return (mX > 490 && mX < 490 + 76 * 8 &&
-	            mY < 576 && mY > 576 - 76 * 8);
+		return (mX > gemsInitial.x && mX < gemsInitial.x + 76 * 8 &&
+	            mY > gemsInitial.y && mY < gemsInitial.y + 76 * 8);
 	}
 	
 	private Coord getCoord(int mX, int mY) {
-		return new Coord((mX - 490) / 76, (mY + 576) / 76);
+		return new Coord((mX - (int)gemsInitial.x) / 76, (mY - (int)gemsInitial.y) / 76);
 	}
 	
 	private void redrawScoreBoard() {
@@ -869,6 +853,6 @@ public class StateGame extends State {
 		redrawScoreBoard();
 		
 		// Restart the time (two minutes)
-		_remainingTime = 2 * 60 * 1000; 
+		_remainingTime = 2 * 60; 
 	}
 }
