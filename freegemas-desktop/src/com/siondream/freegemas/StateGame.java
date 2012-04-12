@@ -2,13 +2,17 @@ package com.siondream.freegemas;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
+import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
+import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.math.Vector3;
 
 public class StateGame extends State {
 
@@ -49,19 +53,20 @@ public class StateGame extends State {
 	// Points and gems matches
 	private MultipleMatch _groupedSquares;
 	private int _points;
-	private int _scoreMultiplier;
+	private int _multiplier = 0;
+	private String _txtTime;
 	
 	// Game elements textures
-	private Texture _boardTexture;
-	private Texture _whiteTexture;
-	private Texture _redTexture;
-	private Texture _purpleTexture;
-	private Texture _orangeTexture;
-	private Texture _greenTexture;
-	private Texture _yellowTexture;
-	private Texture _blueTexture;
-	private Texture _selectorTexture;
-	private Texture _pointsTexture;
+	private TextureRegion _imgBoard;
+	private TextureRegion _imgWhite;
+	private TextureRegion _imgRed;
+	private TextureRegion _imgPurple;
+	private TextureRegion _imgOrange;
+	private TextureRegion _imgGreen;
+	private TextureRegion _imgYellow;
+	private TextureRegion _imgBlue;
+	private TextureRegion _imgSelector;
+	private TextureRegion _imgPoints;
 	
 	// GUI Buttons
 	private Button _hintButton;
@@ -70,9 +75,9 @@ public class StateGame extends State {
 	private Button _musicButton;
 	
 	// Background textures
-	private Texture _scoreBackground;
-	private Texture _timeBackground;
-	private Texture _scoreHeader;
+	private TextureRegion _imgScoreBackground;
+	private TextureRegion _imgTimeBackground;
+	private TextureRegion _imgScoreHeader;
 	
 	// Fonts
 	private BitmapFont _fontTime;
@@ -80,10 +85,7 @@ public class StateGame extends State {
 	public static final String FONT_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;,{}\"´`'<>";
 	
 	// Loading image
-	private Texture _loadingTexture;
-	
-	// Remaining time string
-	private String _timeText;
+	private TextureRegion _imgLoading;
 	
 	// Starting time
 	private double _remainingTime;
@@ -95,36 +97,31 @@ public class StateGame extends State {
 	private Sound _selectSFX;
 	private Sound _fallSFX;
 	private Music _song;
-
-	private int _multiplier = 0;
-
-	private String _txtTime;
-	
-	private SpriteBatch _colouredBatch;
 	
 	public StateGame(Freegemas freegemas) {
 		super(freegemas);
 		
+		// Initial state
 		_state = State.Loading;
 		
+		// Load and sync loading banner
 		AssetManager assetManager = _parent.getAssetManager();
 		assetManager.load("data/loadingBanner.png", Texture.class);
 		assetManager.finishLoading();
-		_loadingTexture = assetManager.get("data/loadingBanner.png", Texture.class);
+		_imgLoading = new TextureRegion(assetManager.get("data/loadingBanner.png", Texture.class));
+		_imgLoading.flip(false,  true);
 		
 		// Create buttons
-		_hintButton = new Button(_parent, 130, 250, "Hint");
-		_resetButton = new Button(_parent, 130, 200, "Reset");
-		_exitButton = new Button(_parent, 130, 150, "Exit");
-		_musicButton = new Button(_parent, 130, 100, "Music");
+		_hintButton = new Button(_parent, 130, 460, "Hint");
+		_resetButton = new Button(_parent, 130, 510, "Reset");
+		_exitButton = new Button(_parent, 130, 560, "Exit");
+		_musicButton = new Button(_parent, 130, 610, "Music");
 		
 		// Creare board
 		_board = new Board();
 		
 		// Time txt
 		_txtTime = new String("");
-		
-		_colouredBatch = new SpriteBatch();
 		
 		// Init game for the first time
 		init();
@@ -135,9 +132,12 @@ public class StateGame extends State {
 		AssetManager assetManager = _parent.getAssetManager();
 		
 		// Load fonts
-		assetManager.load("data/timeFont.fnt", BitmapFont.class);
-		assetManager.load("data/scoreFont.fnt", BitmapFont.class);
-		assetManager.load("data/normalFont.fnt", BitmapFont.class);
+		BitmapFontLoader.BitmapFontParameter fontParameters = new BitmapFontLoader.BitmapFontParameter();
+		fontParameters.flip = true;
+		
+		assetManager.load("data/timeFont.fnt", BitmapFont.class, fontParameters);
+		assetManager.load("data/scoreFont.fnt", BitmapFont.class, fontParameters);
+		assetManager.load("data/normalFont.fnt", BitmapFont.class, fontParameters);
 		
 		// Load textures
 		assetManager.load("data/scoreBackground.png", Texture.class);
@@ -164,25 +164,27 @@ public class StateGame extends State {
 		assetManager.load("data/select.ogg", Sound.class);
 		assetManager.load("data/fall.ogg", Sound.class);
 		assetManager.load("data/music1.ogg", Music.class);
+		
+		resetGame();
 	}
 	
 	@Override
 	public void unload() {
 		// Set assets references to null
-		_boardTexture = null;
-		_whiteTexture = null;
-		_redTexture = null;
-		_purpleTexture = null;
-		_orangeTexture = null;
-		_greenTexture = null;
-		_yellowTexture = null;
-		_blueTexture = null;
-		_selectorTexture = null;
-		_pointsTexture = null;
-		_scoreBackground = null;
-		_timeBackground = null;
-		_loadingTexture = null;
-		_scoreHeader = null;
+		_imgBoard = null;
+		_imgWhite = null;
+		_imgRed = null;
+		_imgPurple = null;
+		_imgOrange = null;
+		_imgGreen = null;
+		_imgYellow = null;
+		_imgBlue = null;
+		_imgSelector = null;
+		_imgPoints = null;
+		_imgLoading = null;
+		_imgScoreBackground = null;
+		_imgTimeBackground = null;
+		_imgScoreHeader = null;
 		_fontTime = null;
 		_fontScore = null;
 		_match1SFX = null;
@@ -248,24 +250,43 @@ public class StateGame extends State {
 		_fontScore = assetManager.get("data/scoreFont.fnt", BitmapFont.class);
 		
 		// Load textures
-		_scoreBackground = assetManager.get("data/scoreBackground.png", Texture.class);
-		_boardTexture = assetManager.get("data/board.png", Texture.class);
-		_selectorTexture = assetManager.get("data/selector.png", Texture.class);
-		_timeBackground = assetManager.get("data/timeBackground.png", Texture.class);
-		_whiteTexture = assetManager.get("data/gemWhite.png", Texture.class);
-		_redTexture = assetManager.get("data/gemRed.png", Texture.class);
-		_purpleTexture = assetManager.get("data/gemPurple.png", Texture.class);
-		_orangeTexture = assetManager.get("data/gemOrange.png", Texture.class);
-		_greenTexture = assetManager.get("data/gemGreen.png", Texture.class);
-		_yellowTexture = assetManager.get("data/gemYellow.png", Texture.class);
-		_blueTexture = assetManager.get("data/gemBlue.png", Texture.class);
+		_imgScoreBackground = new TextureRegion(assetManager.get("data/scoreBackground.png", Texture.class));
+		_imgBoard = new TextureRegion(assetManager.get("data/board.png", Texture.class));
+		_imgSelector = new TextureRegion(assetManager.get("data/selector.png", Texture.class));
+		_imgTimeBackground = new TextureRegion(assetManager.get("data/timeBackground.png", Texture.class));
+		_imgWhite = new TextureRegion(assetManager.get("data/gemWhite.png", Texture.class));
+		_imgRed = new TextureRegion(assetManager.get("data/gemRed.png", Texture.class));
+		_imgPurple = new TextureRegion(assetManager.get("data/gemPurple.png", Texture.class));
+		_imgOrange = new TextureRegion(assetManager.get("data/gemOrange.png", Texture.class));
+		_imgGreen = new TextureRegion(assetManager.get("data/gemGreen.png", Texture.class));
+		_imgYellow = new TextureRegion(assetManager.get("data/gemYellow.png", Texture.class));
+		_imgBlue = new TextureRegion(assetManager.get("data/gemBlue.png", Texture.class));
+		
+		_imgScoreBackground.flip(false, true);
+		_imgBoard.flip(false, true);
+		_imgSelector.flip(false, true);
+		_imgTimeBackground.flip(false, true);
+		_imgWhite.flip(false, true);
+		_imgRed.flip(false, true);
+		_imgPurple.flip(false, true);
+		_imgOrange.flip(false, true);
+		_imgGreen.flip(false, true);
+		_imgYellow.flip(false, true);
+		_imgBlue.flip(false, true);
 		
 		// Button textures and font
-		Texture buttonBackground = assetManager.get("data/buttonBackground.png", Texture.class);
-		Texture iconHint = assetManager.get("data/iconHint.png", Texture.class);
-		Texture iconRestart = assetManager.get("data/iconRestart.png", Texture.class);
-		Texture iconExit = assetManager.get("data/iconExit.png", Texture.class);
-		Texture iconMusic = assetManager.get("data/iconMusic.png", Texture.class);
+		TextureRegion buttonBackground = new TextureRegion(assetManager.get("data/buttonBackground.png", Texture.class));
+		TextureRegion iconHint = new TextureRegion(assetManager.get("data/iconHint.png", Texture.class));
+		TextureRegion iconRestart = new TextureRegion(assetManager.get("data/iconRestart.png", Texture.class));
+		TextureRegion iconExit = new TextureRegion(assetManager.get("data/iconExit.png", Texture.class));
+		TextureRegion iconMusic = new TextureRegion(assetManager.get("data/iconMusic.png", Texture.class));
+		
+		buttonBackground.flip(false, true);
+		iconHint.flip(false, true);
+		iconRestart.flip(false, true);
+		iconExit.flip(false, true);
+		iconMusic.flip(false, true);
+		
 		BitmapFont buttonFont = assetManager.get("data/normalFont.fnt", BitmapFont.class);
 		
 		_hintButton.setIcon(iconHint);
@@ -506,18 +527,16 @@ public class StateGame extends State {
 	@Override
 	public void render() {
 		SpriteBatch batch = _parent.getSpriteBatch();
-		//_colouredBatch.setProjectionMatrix(_parent.getCamera().combined);
-		//_colouredBatch.begin();
 		
 		// STATE LOADING
 		if (_state == State.Loading) {
-			batch.draw(_loadingTexture, 50, 50);
+			batch.draw(_imgLoading, 50, 50);
 			
 			return;
 		}
 		
 		// Background image
-		batch.draw(_boardTexture, 0, 0);
+		batch.draw(_imgBoard, 0, 0);
 		
 		// Draw buttons
 		_hintButton.render();
@@ -526,18 +545,18 @@ public class StateGame extends State {
 		_exitButton.render();
 		
 		// Draw the score
-		batch.draw(_scoreBackground, 130, 470);
+		batch.draw(_imgScoreBackground, 130, 210);
 		_fontScore.draw(batch,
 						new String("" + _points),
 						318 - _fontScore.getBounds(new String("" + _points)).width,
-						506);
+						219);
 		
 		// Draw the time
-		batch.draw(_timeBackground, 130, 350);
+		batch.draw(_imgTimeBackground, 130, 310);
 		_fontTime.draw(batch,
 				_txtTime,
 				310 - _fontTime.getBounds(_txtTime).width,
-				408);
+				325);
 		
 		// Draw each score little message
 		
@@ -546,7 +565,7 @@ public class StateGame extends State {
 		// Draw board
 		int posX = 490;
 		int posY = 576;
-		Texture img = null;
+		TextureRegion img = null;
 		
 		if (_state != State.ShowingScoreTable) {
 			// Go through all of the squares
@@ -557,31 +576,31 @@ public class StateGame extends State {
 	                // save the proper image in the img pointer
 	                switch (_board.getSquare(i, j).getType()) {
 	                case sqWhite:
-	                    img = _whiteTexture;
+	                    img = _imgWhite;
 	                    break;
 
 	                case sqRed:
-	                    img = _redTexture;
+	                    img = _imgRed;
 	                    break;
 
 	                case sqPurple:
-	                    img = _purpleTexture;
+	                    img = _imgPurple;
 	                    break;
 
 	                case sqOrange:
-	                    img = _orangeTexture;
+	                    img = _imgOrange;
 	                    break;
 
 	                case sqGreen:
-	                    img = _greenTexture;
+	                    img = _imgGreen;
 	                    break;
 
 	                case sqYellow:
-	                    img = _yellowTexture;
+	                    img = _imgYellow;
 	                    break;
 
 	                case sqBlue:
-	                    img = _blueTexture;
+	                    img = _imgBlue;
 	                    break;
 
 	                } // switch end
@@ -676,25 +695,77 @@ public class StateGame extends State {
 	
 	@Override
 	public boolean keyDown(int arg0) {
-		System.out.println("Key down");
 		return false;
 	}
 	
 	@Override
 	public boolean keyUp(int arg0) {
-		System.out.println("Key up");
 		return false;
 	}
 	
 	@Override
 	public boolean touchDown(int arg0, int arg1, int arg2, int arg3) {
-		System.out.println("Touch down in " + arg0 + ", " + arg1 + ", " + arg2 + ", " + arg3);
+		
+		if (arg3 == 0){ // Left mouse button clicked
+	        _clicking = true;
+
+	        if (_exitButton.isClicked(arg0, arg1)) {
+	        	System.out.println("Back to menu!");
+	            _parent.changeState("StateMenu");
+	        }
+		}
+
+//	        else if(hintButton -> clicked(mX, mY)){
+//	            showHint();
+//	        }
+//
+//	        else if(musicButton -> clicked(mX, mY)){
+//	            if(sfxSong -> playing()){
+//	                musicButton -> changeText(Gosu::widen(_("Turn on music")));
+//	                sfxSong -> stop();
+//	            }else{
+//	                musicButton -> changeText(Gosu::widen(_("Turn off music")));
+//	                sfxSong -> play(true);
+//	            }	    
+//	        }
+//	        else if (resetButton -> clicked(mX, mY)){
+//	            state = eDesapareceBoard;
+//	            gemsOutScreen();
+//	            resetGame();
+//		    
+//	        }
+//	        else if(overGem(mX, mY)){ // Si se pulsó sobre una gema
+//	            sfxSelect -> play(0.3);
+//
+//	            if(state == eEspera){ // Si no hay ninguna gema marcada
+//	                state = eGemaMarcada;
+//	                selectedSquareFirst.x = getCoord(mX, mY).x;
+//	                selectedSquareFirst.y = getCoord(mX, mY).y;
+//	            }
+//
+//	            else if(state == eGemaMarcada){ // Si ya había una gema marcada
+//	                if(!checkClickedSquare(mX, mY)){
+//	                    selectedSquareFirst.x = -1;
+//	                    selectedSquareFirst.y = -1;
+//	                    state = eEspera;		    
+//	                }
+//	            }
+//	        }
+//	    }
+//
+//	    else if(B == Gosu::kbH){
+//	        showHint();
+//	    }
+//
+//	    if(state == eShowingScoreTable){
+//	        scoreTable -> buttonDown(B);
+//	    }
+		
 		return false;
 	}
 
 	@Override
 	public boolean touchUp(int arg0, int arg1, int arg2, int arg3) {
-		System.out.println("Touch up");
 		return false;
 	}
 	
@@ -702,8 +773,8 @@ public class StateGame extends State {
 	    for(int x = 0; x < 8; ++x){
 	        for(int y = 0; y < 8; ++y){
 	            _board.getSquare(x, y).mustFall = true;
-	            _board.getSquare(x, y).origY = y;
-	            _board.getSquare(x, y).destY = 9 + MathUtils.random(1, 7);
+	            _board.getSquare(x, y).origY = 9 + MathUtils.random(1, 7);
+	            _board.getSquare(x, y).destY = y;
 	        }
 	    }
 	}

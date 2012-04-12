@@ -15,12 +15,14 @@ public class Freegemas implements ApplicationListener {
 	// States
 	private HashMap<String, State> _states = null;
 	private State _currentState = null;
+	private State _nextState = null;
+	private State _oldState = null;
 	
 	// Assets
-	private static AssetManager _assetManager = null;
+	private AssetManager _assetManager = null;
 	
-	private static SpriteBatch _batch = null;
-	private static OrthographicCamera _camera = null;
+	private SpriteBatch _batch = null;
+	private OrthographicCamera _camera = null;
 	
 	// Mouse pointer
 	private TextureRegion _imgMouse = null;
@@ -52,10 +54,11 @@ public class Freegemas implements ApplicationListener {
 		_camera.setToOrtho(true);
 		
 		// Mouse hidden
-		Gdx.input.setCursorCatched(true);
+		//Gdx.input.setCursorCatched(true);
 		
 		// Create states
 		_states.put("StateGame", new StateGame(this));
+		_states.put("StateMenu", new StateMenu(this));
 		
 		// Asign initial state
 		changeState("StateGame");
@@ -92,6 +95,12 @@ public class Freegemas implements ApplicationListener {
 		_batch.draw(_imgMouse, Gdx.input.getX(), Gdx.input.getY());
 		
 		_batch.end();
+		
+		// Perform pending memory unloading, safely
+		performPendingAssetsUnloading();
+		
+		// Perform pending state changes, memory safe
+		performPendingStateChange();
 	}
 
 	@Override
@@ -105,37 +114,50 @@ public class Freegemas implements ApplicationListener {
 	}
 	
 	public boolean changeState(String stateName) {
-		// Fetch new state
-		State newState = _states.get(stateName);
+		// Fetch new state and, therefore, schedule safe change
+		_nextState = _states.get(stateName);
 		
-		if (newState != null) {
-			// Unload old state if there was one
-			if (_currentState != null) {
-				_currentState.unload();
-			}
-			
-			// Assign new state
-			_currentState = newState;
-			
-			// Load new state and register as input processor
-			_currentState.load();
-			Gdx.input.setInputProcessor(_currentState);
-		
+		if (_nextState != null) {
 			return true;
 		}
 		
 		return false;
 	}
 	
-	public static AssetManager getAssetManager() {
+	public AssetManager getAssetManager() {
 		return _assetManager;
 	}
 
-	public static SpriteBatch getSpriteBatch() {
+	public SpriteBatch getSpriteBatch() {
 		return _batch;
 	}
 	
-	public static OrthographicCamera getCamera() {
+	public OrthographicCamera getCamera() {
 		return _camera;
+	}
+	
+	private void performPendingStateChange() {
+		if (_nextState != null) {
+			// Assign new state
+			_currentState = _nextState;
+			
+			// Load new state and register as input processor
+			_currentState.load();
+			Gdx.input.setInputProcessor(_currentState);
+			
+			// Nullify scheduled state change
+			_nextState = null;
+			
+			// Schedule resource unload
+			_oldState = null;
+		}
+	}
+	
+	private void performPendingAssetsUnloading() {
+		// Unload old state if there was one and it's not the same one as the current one
+		if (_oldState != null && _oldState != _currentState) {
+			_oldState.unload();
+			_oldState = null;
+		}
 	}
 }
