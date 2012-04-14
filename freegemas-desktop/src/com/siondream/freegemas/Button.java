@@ -15,6 +15,8 @@ public class Button {
 	private String _text;
 	private BitmapFont _font;
 	private Vector2 _pos;
+	private int _width;
+	private int _height;
 
 	public Button(Freegemas game,
 				  int x,
@@ -28,8 +30,10 @@ public class Button {
 		_icon = icon;
 		_font = font;
 		_text = text;
-		
 		_pos = new Vector2(x, y);
+		_width = 0;
+		_height = 0;
+		
 	}
 	
 	public Button(Freegemas game, int x, int y, String text) {
@@ -96,6 +100,8 @@ public class Button {
 	
 	public void setBackground(TextureRegion background) {
 		_background = background;
+		_width = _background.getRegionWidth();
+		_height = -_background.getRegionWidth();
 	}
 	
 	public void setFont(BitmapFont font) {
@@ -104,9 +110,9 @@ public class Button {
 	
 	public boolean isClicked(int mX, int mY) {
 		if (mX > _pos.x &&
-			mX < _pos.x + _background.getRegionWidth() &&
+			mX < _pos.x + _width &&
 		    mY > _pos.y &&
-		    mY < _pos.y + -_background.getRegionHeight())
+		    mY < _pos.y + _height)
 		{
 			return true;
 		}
