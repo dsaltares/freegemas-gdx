@@ -1,5 +1,7 @@
 package com.siondream.freegemas;
 
+import java.util.ArrayList;
+
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
@@ -101,6 +103,9 @@ public class StateGame extends State {
 	private Sound _fallSFX;
 	private Music _song;
 	
+	// Floating scores
+	private ArrayList<FloatingScore> _floatingScores;
+	
 	public StateGame(Freegemas freegemas) {
 		super(freegemas);
 		
@@ -128,6 +133,9 @@ public class StateGame extends State {
 		
 		_selectedSquareFirst = new Coord(-1, -1);
 		_selectedSquareSecond = new Coord(-1, -1);
+		
+		// Scores
+		_floatingScores = new ArrayList<FloatingScore>();
 		
 		// Init game for the first time
 		init();
@@ -418,8 +426,6 @@ public class StateGame extends State {
 		// DISAPPEARING GEMS STATE
 		if (_state == State.DisappearingGems) {
 			
-			System.out.println("Disappearing anim time: " + _animTime);
-			
 			// When anim ends
 			if ((_animTime += deltaT) >= _animTotalTime) {
 				// Switch to next state, gems falling
@@ -535,7 +541,15 @@ public class StateGame extends State {
 	}
 
 	private void removeEndedFloatingScores() {
+		int numScores = _floatingScores.size();
 		
+		for (int i = 0; i < numScores; ++i) {
+			if (_floatingScores.get(i).isFinished()) {
+				_floatingScores.remove(i);
+				--i;
+				--numScores;
+			}
+		}
 	}
 
 	@Override
@@ -571,10 +585,6 @@ public class StateGame extends State {
 				_txtTime,
 				310 - _fontTime.getBounds(_txtTime).width,
 				325);
-		
-		// Draw each score little message
-		
-		// Draw particle systems
 		
 		// Draw board
 		TextureRegion img = null;
@@ -650,7 +660,7 @@ public class StateGame extends State {
 	                    		  && _board.getSquare(i, j).mustFall) {
 	                        
 	                    	imgY = Animation.easeOutQuad(_animTime,
-							                             _board.getSquares()[i][j].origY * 76,
+							                             gemsInitial.y + _board.getSquares()[i][j].origY * 76,
 							                             _board.getSquares()[i][j].destY * 76,
 							                             _animTotalTime); 
 	                    }                    
@@ -725,6 +735,15 @@ public class StateGame extends State {
 	            
 	        }       
 		}
+		
+		// Draw each score little message
+		int numScores = _floatingScores.size();
+		
+		for (int i = 0; i < numScores; ++i) {
+			_floatingScores.get(i).draw();
+		}
+		
+		// Draw particle systems
 	}
 	
 	@Override
@@ -823,7 +842,7 @@ public class StateGame extends State {
 	    _animTime = 0;
 
 	    // Steps for short animations
-	    _animTotalTime = 0.0;
+	    _animTotalTime = 0.3;
 
 	    // Steps for long animations
 	    _animTotalInitTime = 1.0;
@@ -855,7 +874,20 @@ public class StateGame extends State {
 	}
 	
 	private void createFloatingScores() {
-		
+	    // For each match in the group of matched squares
+	    int numMatches = _groupedSquares.size();
+	    
+	    for (int i = 0; i < numMatches; ++i) {
+	    	// Create new floating score
+	    	Match match = _groupedSquares.get(i);
+	    	_floatingScores.add(new FloatingScore(_parent,
+	    										  _fontScore,
+	    										  match.size() * 5 * _multiplier,
+	    										  gemsInitial.x + match.getMidSquare().x * 76 + 5,
+	    										  gemsInitial.y + match.getMidSquare().y * 76 + 5));
+	    	
+	    	_points += match.size() * 5 * _multiplier;
+	    }
 	}
 	
 	private boolean checkClickedSquare(int mX, int mY) {
