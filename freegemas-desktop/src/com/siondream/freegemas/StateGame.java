@@ -41,7 +41,7 @@ public class StateGame extends State {
 	private boolean _clicking;
 	
 	// Hints
-	private int _showingHint;
+	private double _showingHint;
 	private double _animHintTotalTime;
 	private Coord _coordHint;
 	
@@ -526,8 +526,10 @@ public class StateGame extends State {
 	    }
 
 	    // Whenever a hint is being shown, decrease its controlling variable
-	    if(_showingHint != -1) 
-	        --_showingHint;
+	    if (_showingHint > 0.0)
+	    {
+	        _showingHint -= Gdx.graphics.getDeltaTime();
+	    }
 	}
 	
 	private void removeEndedParticles() {
@@ -726,8 +728,21 @@ public class StateGame extends State {
 	                		   (int)gemsInitial.y + _selectedSquareFirst.y * 76);
 	                batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 	            }
+	        }
+	        
+	        // If a hint is being shown
+	        if (_showingHint > 0.0) {
+	            // Get the opacity percentage
+	            float p = (float)(_showingHint / _animHintTotalTime);
+
+	            float x = gemsInitial.x + _coordHint.x * 76;
+	            float y = gemsInitial.y + _coordHint.y * 76;
+
 	            
-	        }       
+	            batch.setColor(new Color(1.0f, 1.0f, 1.0f, 1.0f - p));
+	            batch.draw(_imgSelector, x, y);
+	            batch.setColor(new Color(1.0f, 1.0f, 1.0f, 1.0f));
+	        }
 		}
 		
 		// Draw each score little message
@@ -908,7 +923,9 @@ public class StateGame extends State {
 	}
 	
 	private void showHint() {
-		
+		ArrayList<Coord> solutions = _board.solutions();
+		_coordHint = solutions.get(0);
+		_showingHint = _animHintTotalTime;
 	}
 	
 	private void playMatchSound() {
