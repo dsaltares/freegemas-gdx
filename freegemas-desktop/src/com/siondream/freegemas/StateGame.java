@@ -8,14 +8,12 @@ import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
-import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 
 public class StateGame extends State {
 
@@ -71,7 +69,6 @@ public class StateGame extends State {
 	private TextureRegion _imgYellow;
 	private TextureRegion _imgBlue;
 	private TextureRegion _imgSelector;
-	private TextureRegion _imgPoints;
 	
 	// GUI Buttons
 	private Button _hintButton;
@@ -82,7 +79,6 @@ public class StateGame extends State {
 	// Background textures
 	private TextureRegion _imgScoreBackground;
 	private TextureRegion _imgTimeBackground;
-	private TextureRegion _imgScoreHeader;
 	
 	// Fonts
 	private BitmapFont _fontTime;
@@ -194,11 +190,9 @@ public class StateGame extends State {
 		_imgYellow = null;
 		_imgBlue = null;
 		_imgSelector = null;
-		_imgPoints = null;
 		_imgLoading = null;
 		_imgScoreBackground = null;
 		_imgTimeBackground = null;
-		_imgScoreHeader = null;
 		_fontTime = null;
 		_fontScore = null;
 		_match1SFX = null;
@@ -518,7 +512,7 @@ public class StateGame extends State {
 	    else if(_state == State.TimeFinished) {
 
 	        // When animation ends
-	        if((_animTime += deltaT) >= _animTotalTime){
+	        if((_animTime += deltaT) >= _animTotalInitTime){
 
 	            // Create a new score table
 	            // _scoreTable = new ScoreTable(_parent, _points);
@@ -651,7 +645,7 @@ public class StateGame extends State {
 	                        imgY = Animation.easeInQuad(_animTime,
 	                        						     gemsInitial.y + _board.getSquares()[i][j].origY * 76,
 							                            _board.getSquares()[i][j].destY * 76,
-							                            _animTotalTime); 
+							                            _animTotalInitTime); 
 	                    }
 
 	                    else if ((_state == State.Wait ||
@@ -831,8 +825,8 @@ public class StateGame extends State {
 	    for(int x = 0; x < 8; ++x){
 	        for(int y = 0; y < 8; ++y){
 	            _board.getSquare(x, y).mustFall = true;
-	            _board.getSquare(x, y).origY = 9 + MathUtils.random(1, 7);
-	            _board.getSquare(x, y).destY = y;
+	            _board.getSquare(x, y).origY = y;
+	            _board.getSquare(x, y).destY = 9 + MathUtils.random(1, 7);
 	        }
 	    }
 	}
