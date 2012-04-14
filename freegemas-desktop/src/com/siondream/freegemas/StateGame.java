@@ -118,7 +118,7 @@ public class StateGame extends State {
 		_hintButton = new Button(_parent, 130, 460, "Hint");
 		_resetButton = new Button(_parent, 130, 510, "Reset");
 		_exitButton = new Button(_parent, 130, 560, "Exit");
-		_musicButton = new Button(_parent, 130, 610, "Music");
+		_musicButton = new Button(_parent, 130, 610, "Turn off music");
 		
 		// Creare board
 		_board = new Board();
@@ -317,6 +317,13 @@ public class StateGame extends State {
 		_selectSFX = assetManager.get("data/select.ogg", Sound.class);
 		_fallSFX = assetManager.get("data/fall.ogg", Sound.class);
 		_song = assetManager.get("data/music1.ogg", Music.class);
+		
+		// Play music if it wasn´t playing
+		if (!_song.isPlaying() &&_musicButton.getText().equals("Turn off music"))
+		{
+			_song.setLooping(true);
+	        _song.play();
+		}
 	}
 	
 	@Override
@@ -410,6 +417,9 @@ public class StateGame extends State {
 	
 		// DISAPPEARING GEMS STATE
 		if (_state == State.DisappearingGems) {
+			
+			System.out.println("Disappearing anim time: " + _animTime);
+			
 			// When anim ends
 			if ((_animTime += deltaT) >= _animTotalTime) {
 				// Switch to next state, gems falling
@@ -620,8 +630,8 @@ public class StateGame extends State {
 	                    // decreasing its speed
 	                    if (_state == State.InitialGems) {
 	                        imgY = Animation.easeOutQuad(_animTime,
-							                             gemsInitial.y - _board.getSquares()[i][j].origY * (-76),
-							                             _board.getSquares()[i][j].destY * (-76),
+							                             gemsInitial.y + _board.getSquares()[i][j].origY * 76,
+							                             _board.getSquares()[i][j].destY * 76,
 							                             _animTotalInitTime);                            
 	                    }
 
@@ -700,6 +710,19 @@ public class StateGame extends State {
 	                		  (int)gemsInitial.x + coord.x * 76,
 	                		  (int)gemsInitial.y + coord.y * 76);
 	            }
+	            
+	            
+	            
+	            // If a gem was previously clicked
+	            if(_state == State.SelectedGem){
+	                // Draw the tinted selector over it
+	            	batch.setColor(1.0f, 0.0f, 1.0f, 1.0f);
+	                batch.draw(_imgSelector,
+	                		   (int)gemsInitial.x + _selectedSquareFirst.x * 76,
+	                		   (int)gemsInitial.y + _selectedSquareFirst.y * 76);
+	                batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
+	            }
+	            
 	        }       
 		}
 	}
@@ -720,11 +743,30 @@ public class StateGame extends State {
 		if (arg3 == 0){ // Left mouse button clicked
 	        _clicking = true;
 
+	        // Button 
 	        if (_exitButton.isClicked(arg0, arg1)) {
 	        	System.out.println("Back to menu!");
 	            _parent.changeState("StateMenu");
 	        }
-	        
+	        else if (_hintButton.isClicked(arg0, arg1)) {
+	            showHint();
+	        }
+	        else if (_musicButton.isClicked(arg0, arg1)) {
+	            if (_song.isPlaying()) {
+	                _musicButton.setText("Turn on music");
+	                _song.stop();
+	            }
+	            else {
+	            	_musicButton.setText("Turn off music");
+	            	_song.setLooping(true);
+	                _song.play();
+	            }	    
+	        }
+	        else if (_resetButton.isClicked(arg0, arg1)) {
+	            _state = State.DisappearingBoard;
+	            gemsOutScreen();
+	            resetGame();
+	        }
 	        else if (overGem(arg0, arg1)) { // Si se pulsó sobre una gema
 	            _selectSFX.play();
 
@@ -750,6 +792,19 @@ public class StateGame extends State {
 
 	@Override
 	public boolean touchUp(int arg0, int arg1, int arg2, int arg3) {
+		if (arg3 == 0){ // Left mouse button clicked
+	        _clicking = false;
+	        
+	        if (_state == State.SelectedGem) {
+
+	            Coord res = getCoord(arg0, arg1);
+
+	            if(!(res == _selectedSquareFirst)) {
+	                checkClickedSquare(arg0, arg1);
+	            }
+	        }
+		}
+		
 		return false;
 	}
 	
@@ -853,6 +908,6 @@ public class StateGame extends State {
 		redrawScoreBoard();
 		
 		// Restart the time (two minutes)
-		_remainingTime = 2 * 60; 
+		_remainingTime = 120; 
 	}
 }

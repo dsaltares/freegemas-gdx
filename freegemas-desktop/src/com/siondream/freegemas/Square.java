@@ -17,8 +17,6 @@ public class Square  {
 	
 	public Square(Type type) {
 		_type = type;
-		origY = 0;
-		destY = 0;
 		mustFall = false;
 	}
 	
@@ -38,7 +36,7 @@ public class Square  {
 	}
 	
 	public boolean equals(Square other) {
-		return other.getType() == _type;
+		return other._type == _type;
 	}
 	
 	public boolean equals(Type type) {
@@ -47,19 +45,19 @@ public class Square  {
 	
 	public static Type numToType(int num) {
 		switch (num) {
-		case 0:
-			return Type.sqWhite;
 		case 1:
-			return Type.sqRed;
+			return Type.sqWhite;
 		case 2:
-			return Type.sqPurple;
+			return Type.sqRed;
 		case 3:
-			return Type.sqOrange;
+			return Type.sqPurple;
 		case 4:
-			return Type.sqGreen;
+			return Type.sqOrange;
 		case 5:
-			return Type.sqYellow;
+			return Type.sqGreen;
 		case 6:
+			return Type.sqYellow;
+		case 7:
 			return Type.sqBlue;
 		default:
 			return Type.sqEmpty;
