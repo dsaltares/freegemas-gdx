@@ -11,6 +11,8 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.Rectangle;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Logger;
 
 public class Freegemas implements ApplicationListener {
 	
@@ -28,13 +30,22 @@ public class Freegemas implements ApplicationListener {
 	private Rectangle _viewport = null;
 	private static final int VIRTUAL_WIDTH = 1280;
 	private static final int VIRTUAL_HEIGHT = 720;
-	private static final float ASPECT_RATIO = 1.777778f;
+	private static final float ASPECT_RATIO = 1.7777f;
 	
 	// Mouse pointer
 	private TextureRegion _imgMouse = null;
+	private Vector3 _mousePos = null;
+	
+	private Logger _logger = null;
 	
 	@Override
 	public void create() {
+		// Logger
+		_logger = new Logger("Freegemas");
+		
+		// Mouse pos
+		_mousePos = new Vector3();
+		
 		// Create assets manager
 		_assetManager = new AssetManager();
 		
@@ -57,7 +68,7 @@ public class Freegemas implements ApplicationListener {
 		
 		// Ortographic camera
 		_camera = new OrthographicCamera(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
-		//_camera.setToOrtho(true);
+		_camera.setToOrtho(true, VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
 		
 		// Mouse hidden
 		Gdx.input.setCursorCatched(true);
@@ -90,13 +101,10 @@ public class Freegemas implements ApplicationListener {
         Gdx.gl.glViewport((int) _viewport.x, (int) _viewport.y,
         				  (int) _viewport.width, (int) _viewport.height);
         
-        
-        
-        
-        _batch.setProjectionMatrix(_camera.combined);
-		
         // Start rendering
         _batch.begin();
+        
+        _batch.setProjectionMatrix(_camera.combined);
 		
 		// Update and render current state
 		if (_currentState != null) {
@@ -105,7 +113,10 @@ public class Freegemas implements ApplicationListener {
 		}
 		
 		// Render mouse on top
-		_batch.draw(_imgMouse, Gdx.input.getX(), Gdx.input.getY());
+		_mousePos.x = Gdx.input.getX();
+		_mousePos.y = Gdx.input.getY();
+		_camera.unproject(_mousePos);
+		_batch.draw(_imgMouse, _mousePos.x, _mousePos.y);
 		
 		_batch.end();
 		
@@ -118,7 +129,7 @@ public class Freegemas implements ApplicationListener {
 
 	@Override
 	public void resize(int arg0, int arg1) {
-		_camera.setToOrtho(true, arg0, arg1);
+		_logger.info("Resizing to: " + arg0 + "x" + arg1);
 		
 		// calculate new viewport
         float aspectRatio = (float)arg0/(float)arg1;

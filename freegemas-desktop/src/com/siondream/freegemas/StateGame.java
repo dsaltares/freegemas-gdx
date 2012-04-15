@@ -14,6 +14,7 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 
 public class StateGame extends State {
 
@@ -102,6 +103,9 @@ public class StateGame extends State {
 	// Floating scores
 	private ArrayList<FloatingScore> _floatingScores;
 	
+	// Mouse pos
+	private Vector3 _mousePos = null;
+	
 	public StateGame(Freegemas freegemas) {
 		super(freegemas);
 		
@@ -132,6 +136,9 @@ public class StateGame extends State {
 		
 		// Scores
 		_floatingScores = new ArrayList<FloatingScore>();
+		
+		// Mouse pos
+		_mousePos = new Vector3();			
 		
 		// Init game for the first time
 		init();
@@ -324,12 +331,18 @@ public class StateGame extends State {
 		if (!_song.isPlaying() &&_musicButton.getText().equals("Turn off music"))
 		{
 			_song.setLooping(true);
-	        _song.play();
+	        //_song.play();
 		}
 	}
 	
 	@Override
 	public void update(double deltaT) {
+		
+		// Update mouse pos
+		_mousePos.x = Gdx.input.getX();
+		_mousePos.y = Gdx.input.getY();
+		_parent.getCamera().unproject(_mousePos);
+		
 		// LOADING STATE
 		if (_state == State.Loading) {
 			// If we finish loading, assign resources and change to FirstFlip state
@@ -709,9 +722,9 @@ public class StateGame extends State {
 	            }
 	            
 	            // If the mouse is over a gem
-	            if (overGem(Gdx.input.getX(), Gdx.input.getY())) {
+	            if (overGem((int)_mousePos.x, (int)_mousePos.y)) {
 	                // Draw the selector over that gem
-	            	Coord coord = getCoord(Gdx.input.getX(), Gdx.input.getY());
+	            	Coord coord = getCoord((int)_mousePos.x, (int)_mousePos.y);
 	                batch.draw(_imgSelector,
 	                		  (int)gemsInitial.x + coord.x * 76,
 	                		  (int)gemsInitial.y + coord.y * 76);
@@ -787,7 +800,7 @@ public class StateGame extends State {
 	            else {
 	            	_musicButton.setText("Turn off music");
 	            	_song.setLooping(true);
-	                _song.play();
+	                //_song.play();
 	            }	    
 	        }
 	        else if (_resetButton.isClicked(arg0, arg1)) {
