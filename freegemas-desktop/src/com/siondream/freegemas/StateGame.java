@@ -112,8 +112,14 @@ public class StateGame extends State {
 	// Mouse pos
 	private Vector3 _mousePos = null;
 	
+	// Language manager
+	private LanguagesManager _lang;
+	
 	public StateGame(Freegemas freegemas) {
 		super(freegemas);
+		
+		// Languages manager
+		_lang = LanguagesManager.getInstance();
 		
 		// Initial state
 		_state = State.Loading;
@@ -126,10 +132,10 @@ public class StateGame extends State {
 		_imgLoading.flip(false,  true);
 		
 		// Create buttons
-		_hintButton = new Button(_parent, 180, 345, "Hint");
-		_resetButton = new Button(_parent, 180, 430, "Reset");
-		_exitButton = new Button(_parent, 180, 515, "Exit");
-		_musicButton = new Button(_parent, 180, 600, "Turn off music");
+		_hintButton = new Button(_parent, 180, 345, _lang.getString("Hint"));
+		_resetButton = new Button(_parent, 180, 430, _lang.getString("Reset"));
+		_exitButton = new Button(_parent, 180, 515, _lang.getString("Exit"));
+		_musicButton = new Button(_parent, 180, 600, _lang.getString("Turn off music"));
 		
 		// Creare board
 		_board = new Board();
@@ -620,7 +626,7 @@ public class StateGame extends State {
 		
 		// Draw the score
 		batch.draw(_imgScoreBackground, 70, 75);
-		_fontText.draw(batch, "Points", 78, 40);
+		_fontText.draw(batch, _lang.getString("Points"), 78, 40);
 		_fontScore.draw(batch,
 						new String("" + _points),
 						452 - _fontScore.getBounds(new String("" + _points)).width,
@@ -628,7 +634,7 @@ public class StateGame extends State {
 		
 		// Draw the time
 		batch.draw(_imgTimeBackground, 70, 215);
-		_fontText.draw(batch, "Time left", 78, 180);
+		_fontText.draw(batch, _lang.getString("Time left"), 78, 180);
 				 
 		_fontTime.draw(batch,
 				_txtTime,
@@ -841,11 +847,11 @@ public class StateGame extends State {
 	        }
 	        else if (_musicButton.isClicked((int)_mousePos.x, (int)_mousePos.y)) {
 	            if (_song.isPlaying()) {
-	                _musicButton.setText("Turn on music");
+	                _musicButton.setText(_lang.getString("Turn on music"));
 	                _song.stop();
 	            }
 	            else {
-	            	_musicButton.setText("Turn off music");
+	            	_musicButton.setText(_lang.getString("Turn off music"));
 	            	_song.setLooping(true);
 	                //_song.play();
 	            }	    

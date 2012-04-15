@@ -1,12 +1,26 @@
-<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <languages>
-	<!-- ENGLISH -->
+	<!-- English -->
 	<language name="en_UK" >
-		<string key="key_test" value="This is a language manager test" />
+		<string key="Loading..." value="Loading..." />
+		<string key="Points" value="Points" />
+		<string key="Time left" value="Time left" />
+		<string key="Hint" value="Hint" />
+		<string key="Reset" value="Reset" />
+		<string key="Exit" value="Exit" />
+		<string key="Turn off music" value="Turn off music" />
+		<string key="Turn on music" value="Turn on music" />
 	</language>
 	
-	<!-- SPANISH -->
+	<!-- Spanish -->
 	<language name="es_ES" >
-		<string key="key_test" value="Esto es una prueba del gestor de idiomas" />
+		<string key="Loading..." value="Cargando..." />
+		<string key="Points" value="Puntos" />
+		<string key="Time left" value="Tiempo" />
+		<string key="Hint" value="Pista" />
+		<string key="Reset" value="Reiniciar" />
+		<string key="Exit" value="Salir" />
+		<string key="Turn off music" value="Musica off" />
+		<string key="Turn on music" value="Musica on" />
 	</language>
 </languages>

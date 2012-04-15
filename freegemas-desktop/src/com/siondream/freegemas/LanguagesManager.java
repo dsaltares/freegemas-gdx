@@ -24,6 +24,7 @@ public class LanguagesManager {
 		loadLanguagesFile();
 		
 		// Set system language
+		System.out.println("System language: " + java.util.Locale.getDefault().toString());
 		HashMap<String, String> systemLanguage = _strings.get(java.util.Locale.getDefault().toString());
 		
 		if (systemLanguage != null) {
@@ -79,6 +80,7 @@ public class LanguagesManager {
 				 // Get language name and whether if it´s the default one or not
 				 Element languageElement = languages.get(i);
 				 String languageName = languageElement.getAttribute("name");
+				 System.out.println("Language name: " + languageName);
 
 				 // Create hashmap element for that language
 				 HashMap<String, String> language = new HashMap<String, String>();
