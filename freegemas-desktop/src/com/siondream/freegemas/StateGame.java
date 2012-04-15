@@ -32,7 +32,7 @@ public class StateGame extends State {
 		ShowingScoreTable
 	};
 	
-	private static final Vector2 gemsInitial = new Vector2(490, 70);
+	private static final Vector2 gemsInitial = new Vector2(572, 68);
 	
 	// Current game state
 	private State _state;
@@ -126,10 +126,10 @@ public class StateGame extends State {
 		_imgLoading.flip(false,  true);
 		
 		// Create buttons
-		_hintButton = new Button(_parent, 130, 460, "Hint");
-		_resetButton = new Button(_parent, 130, 510, "Reset");
-		_exitButton = new Button(_parent, 130, 560, "Exit");
-		_musicButton = new Button(_parent, 130, 610, "Turn off music");
+		_hintButton = new Button(_parent, 180, 345, "Hint");
+		_resetButton = new Button(_parent, 180, 430, "Reset");
+		_exitButton = new Button(_parent, 180, 515, "Exit");
+		_musicButton = new Button(_parent, 180, 600, "Turn off music");
 		
 		// Creare board
 		_board = new Board();
@@ -171,6 +171,7 @@ public class StateGame extends State {
 		// Load textures
 		assetManager.load("data/scoreBackground.png", Texture.class);
 		assetManager.load("data/buttonBackground.png", Texture.class);
+		assetManager.load("data/buttonBackgroundPressed.png", Texture.class);
 		assetManager.load("data/board.png", Texture.class);
 		assetManager.load("data/selector.png", Texture.class);
 		assetManager.load("data/timeBackground.png", Texture.class);
@@ -244,6 +245,7 @@ public class StateGame extends State {
 		assetManager.unload("data/normalFont.fnt");
 		assetManager.unload("data/scoreBackground.png");
 		assetManager.unload("data/buttonBackground.png");
+		assetManager.unload("data/buttonBackgroundPressed.png");
 		assetManager.unload("data/board.png");
 		assetManager.unload("data/selector.png");
 		assetManager.unload("data/timeBackground.png");
@@ -305,6 +307,7 @@ public class StateGame extends State {
 		
 		// Button textures and font
 		TextureRegion buttonBackground = new TextureRegion(assetManager.get("data/buttonBackground.png", Texture.class));
+		TextureRegion buttonBackgroundClicked = new TextureRegion(assetManager.get("data/buttonBackgroundPressed.png", Texture.class));
 		TextureRegion iconHint = new TextureRegion(assetManager.get("data/iconHint.png", Texture.class));
 		TextureRegion iconRestart = new TextureRegion(assetManager.get("data/iconRestart.png", Texture.class));
 		TextureRegion iconExit = new TextureRegion(assetManager.get("data/iconExit.png", Texture.class));
@@ -327,6 +330,11 @@ public class StateGame extends State {
 		_resetButton.setBackground(buttonBackground);
 		_exitButton.setBackground(buttonBackground);
 		_musicButton.setBackground(buttonBackground);
+		
+		_hintButton.setBackgroundClicked(buttonBackgroundClicked);
+		_resetButton.setBackgroundClicked(buttonBackgroundClicked);
+		_exitButton.setBackgroundClicked(buttonBackgroundClicked);
+		_musicButton.setBackgroundClicked(buttonBackgroundClicked);
 		
 		_hintButton.setFont(buttonFont);
 		_resetButton.setFont(buttonFont);
@@ -611,18 +619,21 @@ public class StateGame extends State {
 		_exitButton.render();
 		
 		// Draw the score
-		batch.draw(_imgScoreBackground, 130, 210);
+		batch.draw(_imgScoreBackground, 70, 75);
+		_fontText.draw(batch, "Points", 78, 40);
 		_fontScore.draw(batch,
 						new String("" + _points),
-						318 - _fontScore.getBounds(new String("" + _points)).width,
-						219);
+						452 - _fontScore.getBounds(new String("" + _points)).width,
+						93);
 		
 		// Draw the time
-		batch.draw(_imgTimeBackground, 130, 310);
+		batch.draw(_imgTimeBackground, 70, 215);
+		_fontText.draw(batch, "Time left", 78, 180);
+				 
 		_fontTime.draw(batch,
 				_txtTime,
-				310 - _fontTime.getBounds(_txtTime).width,
-				325);
+				390 - _fontTime.getBounds(_txtTime).width,
+				237);
 		
 		// Draw board
 		TextureRegion img = null;
@@ -884,6 +895,11 @@ public class StateGame extends State {
 	                checkClickedSquare((int)_mousePos.x, (int)_mousePos.y);
 	            }
 	        }
+	        
+	        _hintButton.touchUp();
+	        _musicButton.touchUp();
+	        _exitButton.touchUp();
+	        _resetButton.touchUp();
 		}
 		
 		return false;

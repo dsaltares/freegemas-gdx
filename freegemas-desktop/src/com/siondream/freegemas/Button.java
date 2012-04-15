@@ -11,12 +11,14 @@ import com.badlogic.gdx.math.Vector3;
 public class Button {
 	private Freegemas _game;
 	private TextureRegion _background;
+	private TextureRegion _backgroundClicked;
 	private TextureRegion _icon;
 	private String _text;
 	private BitmapFont _font;
 	private Vector2 _pos;
 	private int _width;
 	private int _height;
+	private boolean _clicked;
 
 	public Button(Freegemas game,
 				  int x,
@@ -33,7 +35,7 @@ public class Button {
 		_pos = new Vector2(x, y);
 		_width = 0;
 		_height = 0;
-		
+		_clicked = false;
 	}
 	
 	public Button(Freegemas game, int x, int y, String text) {
@@ -42,6 +44,7 @@ public class Button {
 		_background = null;
 		_icon = null;
 		_font = null;
+		_clicked = false;
 		
 		_pos = new Vector2(x, y);
 	}
@@ -49,19 +52,23 @@ public class Button {
 	public void render() {
 		SpriteBatch batch = _game.getSpriteBatch();
 		
-		if (_background != null)
+		if (!_clicked && _background != null)
 		{
 			batch.draw(_background, _pos.x, _pos.y);
+		}
+		else if (_backgroundClicked != null)
+		{
+			batch.draw(_backgroundClicked, _pos.x, _pos.y);
 		}
 		
 		if (_icon != null)
 		{
-			batch.draw(_icon, _pos.x + 10, _pos.y + 8);
+			batch.draw(_icon, _pos.x + 15, _pos.y - (_background.getRegionHeight() - _icon.getRegionHeight()) / 2);
 		}
 		
 		if (_font != null)
 		{
-			_font.draw(batch, _text, _pos.x + 50, _pos.y + 12);
+			_font.draw(batch, _text, _pos.x + 60, _pos.y + 25);
 		}
 	}
 	
@@ -104,6 +111,10 @@ public class Button {
 		_height = -_background.getRegionHeight();
 	}
 	
+	public void setBackgroundClicked(TextureRegion backgroundClicked) {
+		_backgroundClicked = backgroundClicked;
+	}
+	
 	public void setFont(BitmapFont font) {
 		_font = font;
 	}
@@ -114,10 +125,15 @@ public class Button {
 		    mY > _pos.y &&
 		    mY < _pos.y + _height)
 		{
+			_clicked = true;
 			return true;
 		}
 		else {
 			return false;
 		}
+	}
+	
+	public void touchUp() {
+		_clicked = false;
 	}
 }
