@@ -30,17 +30,15 @@ public class FloatingScore {
 		_time += Gdx.graphics.getDeltaTime();
 		
 		float p = 1.0f - _time/duration;
-		Vector2 currentPos = new Vector2(_pos.x, _pos.y - (1.0f - p) * 20);
+		Vector2 currentPos = new Vector2(_pos.x - 12, _pos.y - (1.0f - p) * 20);
 		Color oldFontColor = _font.getColor();
 		
-		_font.setScale(1.75f);
 		_font.setColor(new Color(0.0f, 0.0f, 0.0f, p));
 		_font.draw(batch, _text, (int)currentPos.x - 2, (int)currentPos.y - 2);
 		_font.draw(batch, _text, (int)currentPos.x + 2, (int)currentPos.y + 2);
 		_font.setColor(new Color(1.0f, 1.0f, 1.0f, p));
 		_font.draw(batch, _text, (int)currentPos.x, (int)currentPos.y);
 		_font.setColor(oldFontColor);
-		_font.setScale(1.0f);
 	}
 	
 	public boolean isFinished() {
