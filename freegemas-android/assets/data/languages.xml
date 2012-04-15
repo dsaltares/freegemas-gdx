@@ -1,12 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <languages>
 	<!-- ENGLISH -->
-	<language name="en" default="1">
+	<language name="en_UK" >
 		<string key="key_test" value="This is a language manager test" />
 	</language>
 	
 	<!-- SPANISH -->
-	<language name="en" default="0">
+	<language name="es_ES" >
 		<string key="key_test" value="Esto es una prueba del gestor de idiomas" />
 	</language>
 </languages>

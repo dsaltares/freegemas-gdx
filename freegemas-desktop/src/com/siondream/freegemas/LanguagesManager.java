@@ -14,7 +14,6 @@ public class LanguagesManager {
 	
 	private HashMap<String, HashMap<String, String>> _strings = null;
 	private HashMap<String, String> _currentLanguage = null;
-	private HashMap<String, String> _defaultLanguage = null;
 	private String _currentLanguageName = null;
 	
 	private LanguagesManager() {
@@ -23,6 +22,13 @@ public class LanguagesManager {
 		
 		// Parse strings file
 		loadLanguagesFile();
+		
+		// Set system language
+		HashMap<String, String> systemLanguage = _strings.get(java.util.Locale.getDefault().toString());
+		
+		if (systemLanguage != null) {
+			_currentLanguage = systemLanguage;
+		}
 	}
 	
 	public static LanguagesManager getInstance() {
@@ -56,15 +62,6 @@ public class LanguagesManager {
 			if (string != null) {
 				return string;
 			}
-				
-			// Fallback to default language
-			if (_defaultLanguage != null) {
-				string = _defaultLanguage.get(key);
-				
-				if (string != null) {
-					return string;
-				}
-			}
 		}
 	
 		// Key not found, return the key itself
@@ -77,13 +74,11 @@ public class LanguagesManager {
 			Element root = reader.parse(Gdx.files.internal(LANGUAGES_FILE));
 			
 			 Array<Element> languages =  root.getChildrenByNameRecursively("language");
-			 boolean defaultFound = false;
 			 
 			 for (int i = 0; i < languages.size; ++i) {
 				 // Get language name and whether if it´s the default one or not
 				 Element languageElement = languages.get(i);
 				 String languageName = languageElement.getAttribute("name");
-				 boolean isDefault = languageElement.getAttribute("default", "0").equals("1");
 
 				 // Create hashmap element for that language
 				 HashMap<String, String> language = new HashMap<String, String>();
@@ -99,20 +94,12 @@ public class LanguagesManager {
 					 language.put(key, value);
 				 }
 				 
-				 // By default, the default language is the first one
+				 // By default, the current language is the first one
 				 if (i == 0) {
-					 _defaultLanguage = language;
-					 _currentLanguageName = languageName;
-				 }
-				 
-				 if (!defaultFound && isDefault) {
-					 defaultFound = true;
-					 _defaultLanguage = language;
+					 _currentLanguage = language;
 					 _currentLanguageName = languageName;
 				 }
 			 }
-			 
-			 _currentLanguage = _defaultLanguage;
 		}
 		catch (Exception e) {
 			System.out.println("Error loading languages file " + LANGUAGES_FILE);
