@@ -16,6 +16,10 @@ import com.badlogic.gdx.utils.Logger;
 
 public class Freegemas implements ApplicationListener {
 	
+	public enum Platform {Desktop, Android, Web};
+	
+	public static Platform platform = Platform.Desktop;
+	
 	// Language manager
 	LanguagesManager _languagesManager = null;
 	
@@ -119,10 +123,12 @@ public class Freegemas implements ApplicationListener {
 		}
 		
 		// Render mouse on top
-		_mousePos.x = Gdx.input.getX();
-		_mousePos.y = Gdx.input.getY();
-		_camera.unproject(_mousePos);
-		_batch.draw(_imgMouse, _mousePos.x, _mousePos.y);
+		if (platform != Platform.Android) {
+			_mousePos.x = Gdx.input.getX();
+			_mousePos.y = Gdx.input.getY();
+			_camera.unproject(_mousePos);
+			_batch.draw(_imgMouse, _mousePos.x, _mousePos.y);
+		}
 		
 		_batch.end();
 		
