@@ -9,6 +9,8 @@ import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.math.Rectangle;
+import com.badlogic.gdx.math.Vector2;
 
 public class Freegemas implements ApplicationListener {
 	
@@ -23,6 +25,10 @@ public class Freegemas implements ApplicationListener {
 	
 	private SpriteBatch _batch = null;
 	private OrthographicCamera _camera = null;
+	private Rectangle _viewport = null;
+	private static final int VIRTUAL_WIDTH = 1280;
+	private static final int VIRTUAL_HEIGHT = 720;
+	private static final float ASPECT_RATIO = 1.777778f;
 	
 	// Mouse pointer
 	private TextureRegion _imgMouse = null;
@@ -50,8 +56,8 @@ public class Freegemas implements ApplicationListener {
 		_batch = new SpriteBatch();
 		
 		// Ortographic camera
-		_camera = new OrthographicCamera(Gdx.graphics.getWidth(), Gdx.graphics.getHeight());
-		_camera.setToOrtho(true);
+		_camera = new OrthographicCamera(VIRTUAL_WIDTH, VIRTUAL_HEIGHT);
+		//_camera.setToOrtho(true);
 		
 		// Mouse hidden
 		Gdx.input.setCursorCatched(true);
@@ -80,6 +86,13 @@ public class Freegemas implements ApplicationListener {
         // use its matrices.
         Gdx.gl.glClear(GL10.GL_COLOR_BUFFER_BIT);
         _camera.update();
+        //_camera.apply(Gdx.gl10);
+        Gdx.gl.glViewport((int) _viewport.x, (int) _viewport.y,
+        				  (int) _viewport.width, (int) _viewport.height);
+        
+        
+        
+        
         _batch.setProjectionMatrix(_camera.combined);
 		
         // Start rendering
@@ -106,6 +119,30 @@ public class Freegemas implements ApplicationListener {
 	@Override
 	public void resize(int arg0, int arg1) {
 		_camera.setToOrtho(true, arg0, arg1);
+		
+		// calculate new viewport
+        float aspectRatio = (float)arg0/(float)arg1;
+        float scale = 1f;
+        Vector2 crop = new Vector2(0f, 0f);
+        
+        if(aspectRatio > ASPECT_RATIO)
+        {
+            scale = (float)arg1 / (float)VIRTUAL_HEIGHT;
+            crop.x = (arg0 - VIRTUAL_WIDTH * scale) / 2.0f;
+        }
+        else if(aspectRatio < ASPECT_RATIO)
+        {
+            scale = (float)arg0 / (float)VIRTUAL_WIDTH;
+            crop.y = (arg1 - VIRTUAL_HEIGHT * scale) / 2.0f;
+        }
+        else
+        {
+            scale = (float)arg0/(float)VIRTUAL_WIDTH;
+        }
+
+        float w = (float)VIRTUAL_WIDTH * scale;
+        float h = (float)VIRTUAL_HEIGHT * scale;
+        _viewport = new Rectangle(crop.x, crop.y, w, h);
 	}
 
 	@Override
