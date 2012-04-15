@@ -10,6 +10,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
@@ -103,6 +104,10 @@ public class StateGame extends State {
 	// Floating scores
 	private ArrayList<FloatingScore> _floatingScores;
 	
+	// Particle effects
+	private ParticleEffect _effect;
+	private ArrayList<ParticleEffect> _effects;
+	
 	// Mouse pos
 	private Vector3 _mousePos = null;
 	
@@ -138,7 +143,13 @@ public class StateGame extends State {
 		_floatingScores = new ArrayList<FloatingScore>();
 		
 		// Mouse pos
-		_mousePos = new Vector3();			
+		_mousePos = new Vector3();
+		
+		// Particle effects
+		_effect = new ParticleEffect();
+		_effect.load(Gdx.files.internal("data/particleStars"), Gdx.files.internal("data"));
+		
+		_effects = new ArrayList<ParticleEffect>();
 		
 		// Init game for the first time
 		init();
@@ -354,6 +365,13 @@ public class StateGame extends State {
 			return;
 		}
 		
+		// Particle effects
+		int numParticles = _effects.size();
+		
+		for (int i = 0; i < numParticles; ++i) {
+			_effects.get(i).update(Gdx.graphics.getDeltaTime());
+		}
+		
 		// Game time
 		_remainingTime -= deltaT;
 		// If we are under the time limit, compute the string for the board
@@ -546,7 +564,15 @@ public class StateGame extends State {
 	}
 	
 	private void removeEndedParticles() {
+		int numParticles = _effects.size();
 		
+		for (int i = 0; i < numParticles; ++i) {
+			if (_effects.get(i).isComplete()) {
+				_effects.remove(i);
+				--i;
+				--numParticles;
+			}
+		}
 	}
 
 	private void removeEndedFloatingScores() {
@@ -766,6 +792,11 @@ public class StateGame extends State {
 		}
 		
 		// Draw particle systems
+		int numParticles = _effects.size();
+		
+		for (int i = 0; i < numParticles; ++i) {
+			_effects.get(i).draw(batch);
+		}
 	}
 	
 	@Override
@@ -902,13 +933,22 @@ public class StateGame extends State {
 	    for (int i = 0; i < numMatches; ++i) {
 	    	// Create new floating score
 	    	Match match = _groupedSquares.get(i);
+	    	int matchSize = match.size();
 	    	_floatingScores.add(new FloatingScore(_parent,
 	    										  _fontScore,
-	    										  match.size() * 5 * _multiplier,
+	    										  matchSize * 5 * _multiplier,
 	    										  gemsInitial.x + match.getMidSquare().x * 76 + 5,
 	    										  gemsInitial.y + match.getMidSquare().y * 76 + 5));
 	    	
-	    	_points += match.size() * 5 * _multiplier;
+	    	// Create a particle effect for each matching square
+	    	for (int j = 0; j < matchSize; ++j) {
+	    		ParticleEffect newEffect = new ParticleEffect(_effect);
+	    		newEffect.setPosition(gemsInitial.x + match.get(j).x * 76, gemsInitial.y + match.get(j).y * 76);
+	    		newEffect.start();
+	    		_effects.add(newEffect);
+	    	}
+	    	
+	    	_points += matchSize * 5 * _multiplier;
 	    }
 	}
 	
