@@ -88,7 +88,7 @@ public class Freegemas implements ApplicationListener {
 		_states.put("StateMenu", new StateMenu(this));
 		
 		// Asign initial state
-		changeState("StateGame");
+		changeState("StateMenu");
 	}
 
 	@Override
@@ -174,6 +174,11 @@ public class Freegemas implements ApplicationListener {
 	}
 	
 	public boolean changeState(String stateName) {
+		// Check if it's exit state
+		if (stateName.equals("StateQuit")) {
+			Gdx.app.exit();
+		}
+		
 		// Fetch new state and, therefore, schedule safe change
 		_nextState = _states.get(stateName);
 		
