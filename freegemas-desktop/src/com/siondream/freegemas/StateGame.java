@@ -10,6 +10,7 @@ import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
@@ -88,9 +89,6 @@ public class StateGame extends State {
 	private BitmapFont _fontText;
 	public static final String FONT_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;,{}\"´`'<>";
 	
-	// Loading image
-	private TextureRegion _imgLoading;
-	
 	// Starting time
 	private double _remainingTime;
 	
@@ -125,11 +123,13 @@ public class StateGame extends State {
 		_state = State.Loading;
 		
 		// Load and sync loading banner
+		BitmapFontLoader.BitmapFontParameter fontParameters = new BitmapFontLoader.BitmapFontParameter();
+		fontParameters.flip = true;
 		AssetManager assetManager = _parent.getAssetManager();
-		assetManager.load("data/loadingBanner.png", Texture.class);
+		assetManager.load("data/normalFont.fnt", BitmapFont.class, fontParameters);
 		assetManager.finishLoading();
-		_imgLoading = new TextureRegion(assetManager.get("data/loadingBanner.png", Texture.class));
-		_imgLoading.flip(false,  true);
+		_fontText = assetManager.get("data/normalFont.fnt", BitmapFont.class);
+
 		
 		// Create buttons
 		_hintButton = new Button(_parent, 180, 345, _lang.getString("Hint"));
@@ -172,7 +172,6 @@ public class StateGame extends State {
 		
 		assetManager.load("data/timeFont.fnt", BitmapFont.class, fontParameters);
 		assetManager.load("data/scoreFont.fnt", BitmapFont.class, fontParameters);
-		assetManager.load("data/normalFont.fnt", BitmapFont.class, fontParameters);
 		
 		// Load textures
 		assetManager.load("data/scoreBackground.png", Texture.class);
@@ -216,12 +215,10 @@ public class StateGame extends State {
 		_imgYellow = null;
 		_imgBlue = null;
 		_imgSelector = null;
-		_imgLoading = null;
 		_imgScoreBackground = null;
 		_imgTimeBackground = null;
 		_fontTime = null;
 		_fontScore = null;
-		_fontText = null;
 		_match1SFX = null;
 		_match2SFX = null;
 		_match3SFX = null;
@@ -248,7 +245,6 @@ public class StateGame extends State {
 		AssetManager assetManager = _parent.getAssetManager();
 		assetManager.unload("data/timeFont.fnt");
 		assetManager.unload("data/scoreFont.fnt");
-		assetManager.unload("data/normalFont.fnt");
 		assetManager.unload("data/scoreBackground.png");
 		assetManager.unload("data/buttonBackground.png");
 		assetManager.unload("data/buttonBackgroundPressed.png");
@@ -284,7 +280,6 @@ public class StateGame extends State {
 		// Load fonts
 		_fontTime = assetManager.get("data/timeFont.fnt", BitmapFont.class);
 		_fontScore = assetManager.get("data/scoreFont.fnt", BitmapFont.class);
-		_fontText = assetManager.get("data/normalFont.fnt", BitmapFont.class);
 		
 		// Load textures
 		_imgScoreBackground = new TextureRegion(assetManager.get("data/scoreBackground.png", Texture.class));
@@ -610,7 +605,12 @@ public class StateGame extends State {
 		
 		// STATE LOADING
 		if (_state == State.Loading) {
-			batch.draw(_imgLoading, 50, 50);
+			String loading = _lang.getString("Loading...");
+			TextBounds bounds = _fontText.getBounds(loading);
+			_fontText.draw(batch,
+						   loading,
+						   (Freegemas.VIRTUAL_WIDTH - bounds.width) / 2,
+						   (Freegemas.VIRTUAL_HEIGHT - bounds.height) / 2);
 			
 			return;
 		}

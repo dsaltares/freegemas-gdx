@@ -35,8 +35,8 @@ public class Freegemas implements ApplicationListener {
 	private SpriteBatch _batch = null;
 	private OrthographicCamera _camera = null;
 	private Rectangle _viewport = null;
-	private static final int VIRTUAL_WIDTH = 1280;
-	private static final int VIRTUAL_HEIGHT = 720;
+	public static final int VIRTUAL_WIDTH = 1280;
+	public static final int VIRTUAL_HEIGHT = 720;
 	private static final float ASPECT_RATIO = 1.7777f;
 	
 	// Mouse pointer
