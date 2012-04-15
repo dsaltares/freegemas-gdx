@@ -2,11 +2,11 @@ Untitled
 - Delay -
 active: false
 - Duration - 
-lowMin: 1000.0
-lowMax: 1000.0
+lowMin: 500.0
+lowMax: 500.0
 - Count - 
 min: 15
-max: 20
+max: 15
 - Emission - 
 lowMin: 8.0
 lowMax: 8.0

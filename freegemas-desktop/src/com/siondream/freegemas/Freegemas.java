@@ -16,6 +16,9 @@ import com.badlogic.gdx.utils.Logger;
 
 public class Freegemas implements ApplicationListener {
 	
+	// Language manager
+	LanguagesManager _languagesManager = null;
+	
 	// States
 	private HashMap<String, State> _states = null;
 	private State _currentState = null;
@@ -42,6 +45,9 @@ public class Freegemas implements ApplicationListener {
 	public void create() {
 		// Logger
 		_logger = new Logger("Freegemas");
+
+		// Languages manager
+		_languagesManager = LanguagesManager.getInstance();
 		
 		// Mouse pos
 		_mousePos = new Vector3();

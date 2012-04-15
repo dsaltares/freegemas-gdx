@@ -85,6 +85,7 @@ public class StateGame extends State {
 	// Fonts
 	private BitmapFont _fontTime;
 	private BitmapFont _fontScore;
+	private BitmapFont _fontText;
 	public static final String FONT_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;,{}\"´`'<>";
 	
 	// Loading image
@@ -213,6 +214,7 @@ public class StateGame extends State {
 		_imgTimeBackground = null;
 		_fontTime = null;
 		_fontScore = null;
+		_fontText = null;
 		_match1SFX = null;
 		_match2SFX = null;
 		_match3SFX = null;
@@ -274,6 +276,7 @@ public class StateGame extends State {
 		// Load fonts
 		_fontTime = assetManager.get("data/timeFont.fnt", BitmapFont.class);
 		_fontScore = assetManager.get("data/scoreFont.fnt", BitmapFont.class);
+		_fontText = assetManager.get("data/normalFont.fnt", BitmapFont.class);
 		
 		// Load textures
 		_imgScoreBackground = new TextureRegion(assetManager.get("data/scoreBackground.png", Texture.class));
@@ -811,19 +814,21 @@ public class StateGame extends State {
 	
 	@Override
 	public boolean touchDown(int arg0, int arg1, int arg2, int arg3) {
-		
 		if (arg3 == 0){ // Left mouse button clicked
 	        _clicking = true;
 
+	        _mousePos.x = arg0;
+	        _mousePos.y = arg1;
+	        _parent.getCamera().unproject(_mousePos);
+	        
 	        // Button 
-	        if (_exitButton.isClicked(arg0, arg1)) {
-	        	System.out.println("Back to menu!");
+	        if (_exitButton.isClicked((int)_mousePos.x, (int)_mousePos.y)) {
 	            _parent.changeState("StateMenu");
 	        }
-	        else if (_hintButton.isClicked(arg0, arg1)) {
+	        else if (_hintButton.isClicked((int)_mousePos.x, (int)_mousePos.y)) {
 	            showHint();
 	        }
-	        else if (_musicButton.isClicked(arg0, arg1)) {
+	        else if (_musicButton.isClicked((int)_mousePos.x, (int)_mousePos.y)) {
 	            if (_song.isPlaying()) {
 	                _musicButton.setText("Turn on music");
 	                _song.stop();
@@ -834,23 +839,23 @@ public class StateGame extends State {
 	                //_song.play();
 	            }	    
 	        }
-	        else if (_resetButton.isClicked(arg0, arg1)) {
+	        else if (_resetButton.isClicked((int)_mousePos.x, (int)_mousePos.y)) {
 	            _state = State.DisappearingBoard;
 	            gemsOutScreen();
 	            resetGame();
 	        }
-	        else if (overGem(arg0, arg1)) { // Si se pulsó sobre una gema
+	        else if (overGem((int)_mousePos.x, (int)_mousePos.y)) { // Si se pulsó sobre una gema
 	            _selectSFX.play();
 
 	            if (_state == State.Wait) { // Si no hay ninguna gema marcada
 	                _state = State.SelectedGem;
-	                Coord coord = getCoord(arg0, arg1);
+	                Coord coord = getCoord((int)_mousePos.x, (int)_mousePos.y);
 	                _selectedSquareFirst.x = coord.x;
 	                _selectedSquareFirst.y = coord.y;
 	            }
 
 	            else if (_state == State.SelectedGem) { // Si ya había una gema marcada
-	                if (!checkClickedSquare(arg0, arg1)) {
+	                if (!checkClickedSquare((int)_mousePos.x, (int)_mousePos.y)) {
 	                    _selectedSquareFirst.x = -1;
 	                    _selectedSquareFirst.y = -1;
 	                    _state = State.Wait;		    
@@ -867,12 +872,16 @@ public class StateGame extends State {
 		if (arg3 == 0){ // Left mouse button clicked
 	        _clicking = false;
 	        
+	        _mousePos.x = arg0;
+	        _mousePos.y = arg1;
+	        _parent.getCamera().unproject(_mousePos);
+	        
 	        if (_state == State.SelectedGem) {
 
-	            Coord res = getCoord(arg0, arg1);
+	            Coord res = getCoord((int)_mousePos.x, (int)_mousePos.y);
 
 	            if(!(res == _selectedSquareFirst)) {
-	                checkClickedSquare(arg0, arg1);
+	                checkClickedSquare((int)_mousePos.x, (int)_mousePos.y);
 	            }
 	        }
 		}
@@ -943,7 +952,7 @@ public class StateGame extends State {
 	    	// Create a particle effect for each matching square
 	    	for (int j = 0; j < matchSize; ++j) {
 	    		ParticleEffect newEffect = new ParticleEffect(_effect);
-	    		newEffect.setPosition(gemsInitial.x + match.get(j).x * 76, gemsInitial.y + match.get(j).y * 76);
+	    		newEffect.setPosition(gemsInitial.x + match.get(j).x * 76 + 38, gemsInitial.y + match.get(j).y * 76 + 38);
 	    		newEffect.start();
 	    		_effects.add(newEffect);
 	    	}
