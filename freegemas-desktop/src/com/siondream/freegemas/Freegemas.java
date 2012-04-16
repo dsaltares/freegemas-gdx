@@ -86,8 +86,9 @@ public class Freegemas implements ApplicationListener {
 		// Create states
 		_states.put("StateGame", new StateGame(this));
 		_states.put("StateMenu", new StateMenu(this));
+		_states.put("StateHowto", new StateHowto(this));
 		
-		// Asign initial state
+		// Asign initial state 
 		changeState("StateMenu");
 	}
 
@@ -203,6 +204,14 @@ public class Freegemas implements ApplicationListener {
 	
 	private void performPendingStateChange() {
 		if (_nextState != null) {
+			if (_currentState != null) {
+				// Pause current state
+				_currentState.pause();
+			}
+			
+			// Schedule resource unload
+			_oldState = _currentState;
+			
 			// Assign new state
 			_currentState = _nextState;
 			
@@ -213,8 +222,8 @@ public class Freegemas implements ApplicationListener {
 			// Nullify scheduled state change
 			_nextState = null;
 			
-			// Schedule resource unload
-			_oldState = null;
+			// Resume state
+			_currentState.resume();
 		}
 	}
 	

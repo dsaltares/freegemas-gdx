@@ -18,6 +18,15 @@ public class State implements InputProcessor {
 	public void render() {
 	
 	}
+	
+	// LIFE - CYCLE
+	public void pause() {
+		
+	}
+	
+	public void resume() {
+		
+	}
 
 	// EVENTS
 	

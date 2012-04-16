@@ -3,6 +3,8 @@
 	<!-- English -->
 	<language name="en_UK" >
 		<string key="Loading..." value="Loading..." />
+		
+		<!--  Game  -->
 		<string key="Points" value="Points" />
 		<string key="Time left" value="Time left" />
 		<string key="Hint" value="Hint" />
@@ -10,11 +12,25 @@
 		<string key="Exit" value="Exit" />
 		<string key="Turn off music" value="Turn off music" />
 		<string key="Turn on music" value="Turn on music" />
+		
+		<!--  Menu  -->
+		<string key="Timetrial mode" value="Timetrial mode" />
+		<string key="How to play" value="How to play" />
+		<string key="Exit" value="Exit" />
+		
+		<!--  How to play  -->
+		<string key="help_text" value="The objective of the game is to swap one gem with an adjacent gem to form a horizontal or vertical chain of three or more gems.
+		
+		Click the first gem and then click the gem you want to swap it with. If the movement is correct, they will swap and the chained gems will disappear.
+		
+		Bonus points are given when more than three identical gems are formed. Sometimes chain reactions, called cascades, are triggered, where chains are formed by the falling gems. Cascades are awarded with bonus points." />
 	</language>
 	
 	<!-- Spanish -->
 	<language name="es_ES" >
 		<string key="Loading..." value="Cargando..." />
+		
+		<!-- Game -->
 		<string key="Points" value="Puntos" />
 		<string key="Time left" value="Tiempo" />
 		<string key="Hint" value="Pista" />
@@ -22,5 +38,17 @@
 		<string key="Exit" value="Salir" />
 		<string key="Turn off music" value="Musica off" />
 		<string key="Turn on music" value="Musica on" />
+		
+		<!--  Menu  -->
+		<string key="Timetrial mode" value="Contrarreloj" />
+		<string key="How to play" value="Ayuda" />
+		<string key="Exit" value="Salir" />
+		
+		<!--  How to play  -->
+		<string key="help_text" value="El objetivo del juego es intercambiar una gema con otra adyacente para formar una cadena vertical u horizontal de tres o mas gemas.
+		
+		Pulsa sobre la primera gema y luego sobre la segunda si quieres intercambiarlas. Si el movimiento es correcto, se intercambiaran y desapareceran.
+		
+		Se consiguen bonificaciones cuandos encadenan mas de tres gemas iguales. A veces se producen reacciones en cadenas llamadas cascadas las cuales reciben puntos extra." />
 	</language>
 </languages>
