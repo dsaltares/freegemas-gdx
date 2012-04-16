@@ -119,6 +119,7 @@ public class StateHowto extends State {
 		_titlePos = new Vector2(315 + (Freegemas.VIRTUAL_WIDTH - 400 - bounds.width) / 2, 55);
 		_helpPos = new Vector2(375, 175);
 		
+		Gdx.input.setInputProcessor(this);
 	}
 	
 	@Override

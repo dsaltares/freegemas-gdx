@@ -208,6 +208,9 @@ public class Freegemas implements ApplicationListener {
 				// Pause current state
 				_currentState.pause();
 			}
+
+			// Cancel input processor
+			Gdx.input.setInputProcessor(null);
 			
 			// Schedule resource unload
 			_oldState = _currentState;
@@ -215,9 +218,8 @@ public class Freegemas implements ApplicationListener {
 			// Assign new state
 			_currentState = _nextState;
 			
-			// Load new state and register as input processor
+			// Load new state
 			_currentState.load();
-			Gdx.input.setInputProcessor(_currentState);
 			
 			// Nullify scheduled state change
 			_nextState = null;

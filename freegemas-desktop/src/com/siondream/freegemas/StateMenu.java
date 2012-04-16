@@ -56,6 +56,8 @@ public class StateMenu extends State {
 	// Lang
 	LanguagesManager _lang;
 	
+	private boolean _readyToChange;
+	
 	public StateMenu(Freegemas freegemas) {
 		super(freegemas);
 		
@@ -93,6 +95,8 @@ public class StateMenu extends State {
 		_animTime = 0.0;
 		_animTotalTime = 0.5;
 		_animLogoTime = 0.5;
+		
+		_readyToChange = false;
 	}
 	
 	@Override
@@ -156,6 +160,8 @@ public class StateMenu extends State {
 		_menuStart = new Vector2((Freegemas.VIRTUAL_WIDTH - maxWidth) / 2, 350);
 		_menuGap = 100;
 		_menuEnd = new Vector2(_menuStart.x + maxWidth, 350 + _options.size() * _menuGap);
+		
+		Gdx.input.setInputProcessor(this);
 	}
 	
 	@Override
@@ -179,15 +185,6 @@ public class StateMenu extends State {
 	    }
 	    else if (_state == State.TransitionOut) {
 
-	    }
-
-	    // Mouse position and selected option
-	    _mousePos.x = Gdx.input.getX();
-	    _mousePos.y = Gdx.input.getY();
-	    _parent.getCamera().unproject(_mousePos);
-
-	    if (_mousePos.y >= _menuStart.y && _mousePos.y < _menuEnd.y) {
-	        _selectedOption = (int)(_mousePos.y - _menuStart.y) / _menuGap;
 	    }
 	}
 	
@@ -225,17 +222,28 @@ public class StateMenu extends State {
 		}
 
 	    //jewelAnim . draw();
-
-	    batch.draw(_imgHighlight,
-	    		   (Freegemas.VIRTUAL_WIDTH - _imgHighlight.getRegionWidth()) / 2,
-	    		   _menuStart.y + 5 + _selectedOption * _menuGap);
+		
+		if (_readyToChange) {
+		    batch.draw(_imgHighlight,
+		    		   (Freegemas.VIRTUAL_WIDTH - _imgHighlight.getRegionWidth()) / 2,
+		    		   _menuStart.y + 5 + _selectedOption * _menuGap);
+		}
 	}
 	
 	@Override
 	public boolean touchDown(int arg0, int arg1, int arg2, int arg3) {
 		// Left click		
 		if (arg3 == 0) {
-			_parent.changeState(_options.get(_selectedOption).getSecond());
+			
+			int currentOption = getOption();
+			
+			if (_readyToChange && currentOption == _selectedOption) {
+				_parent.changeState(_options.get(_selectedOption).getSecond());
+			}
+			else {
+				_readyToChange = true;
+				_selectedOption = currentOption;
+			}
 		}
 		
 		return false;
@@ -250,5 +258,19 @@ public class StateMenu extends State {
 	@Override
 	public void resume() {
 		_state = State.Loading;
+		_readyToChange = false;
+	}
+	
+	private int getOption() {
+		// Mouse position and selected option
+	    _mousePos.x = Gdx.input.getX();
+	    _mousePos.y = Gdx.input.getY();
+	    _parent.getCamera().unproject(_mousePos);
+
+	    if (_mousePos.y >= _menuStart.y - 100 && _mousePos.y < _menuEnd.y + 100) {
+	       return (int)(_mousePos.y - _menuStart.y) / _menuGap;
+	    }
+	    
+	    return _selectedOption;
 	}
 }

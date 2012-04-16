@@ -360,6 +360,8 @@ public class StateGame extends State {
 			_song.setLooping(true);
 	        //_song.play();
 		}
+		
+		Gdx.input.setInputProcessor(this);
 	}
 	
 	@Override
