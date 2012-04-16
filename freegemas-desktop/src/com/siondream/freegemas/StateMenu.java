@@ -36,7 +36,7 @@ public class StateMenu extends State {
 	
 	// Font
 	private BitmapFont _fontMenu;
-	private BitmapFont _fontText;
+	private BitmapFont _fontLoading;
 	
 	// Options
 	private int _selectedOption;
@@ -72,10 +72,12 @@ public class StateMenu extends State {
 		_fontMenu = null;
 		
 		// Load font resource
+		BitmapFontLoader.BitmapFontParameter fontParameters = new BitmapFontLoader.BitmapFontParameter();
+		fontParameters.flip = true;
 		AssetManager assetManager = _parent.getAssetManager();
-		assetManager.load("data/normalFont.fnt", BitmapFont.class);
+		assetManager.load("data/loadingFont.fnt", BitmapFont.class, fontParameters);
 		assetManager.finishLoading();
-		_fontText = assetManager.get("data/normalFont.fnt", BitmapFont.class);
+		_fontLoading = assetManager.get("data/loadingFont.fnt", BitmapFont.class);
 		
 		// Menu options
 		_selectedOption = 0;
@@ -151,8 +153,8 @@ public class StateMenu extends State {
 			}
 		}
 		
-		_menuStart = new Vector2((Freegemas.VIRTUAL_WIDTH - maxWidth) / 2, 400);
-		_menuGap = 75;
+		_menuStart = new Vector2((Freegemas.VIRTUAL_WIDTH - maxWidth) / 2, 350);
+		_menuGap = 100;
 		_menuEnd = new Vector2(_menuStart.x + maxWidth, 350 + _options.size() * _menuGap);
 	}
 	
@@ -196,11 +198,11 @@ public class StateMenu extends State {
 		// STATE LOADING - Just render loading
 		if (_state == State.Loading) {
 			String loading = _lang.getString("Loading...");
-			TextBounds bounds = _fontText.getBounds(loading);
-			_fontText.draw(batch,
-						   loading,
-						   (Freegemas.VIRTUAL_WIDTH - bounds.width) / 2,
-						   (Freegemas.VIRTUAL_HEIGHT - bounds.height) / 2);
+			TextBounds bounds = _fontLoading.getBounds(loading);
+			_fontLoading.draw(batch,
+						     loading,
+						     (Freegemas.VIRTUAL_WIDTH - bounds.width) / 2,
+						     (Freegemas.VIRTUAL_HEIGHT - bounds.height) / 2);
 			
 			return;
 		}
@@ -243,5 +245,10 @@ public class StateMenu extends State {
 	public boolean touchUp(int arg0, int arg1, int arg2, int arg3) {
 		
 		return false;
+	}
+	
+	@Override
+	public void resume() {
+		_state = State.Loading;
 	}
 }

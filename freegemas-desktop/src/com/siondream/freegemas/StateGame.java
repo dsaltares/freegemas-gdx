@@ -87,6 +87,7 @@ public class StateGame extends State {
 	private BitmapFont _fontTime;
 	private BitmapFont _fontScore;
 	private BitmapFont _fontText;
+	private BitmapFont _fontLoading;
 	public static final String FONT_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;,{}\"´`'<>";
 	
 	// Starting time
@@ -126,9 +127,9 @@ public class StateGame extends State {
 		BitmapFontLoader.BitmapFontParameter fontParameters = new BitmapFontLoader.BitmapFontParameter();
 		fontParameters.flip = true;
 		AssetManager assetManager = _parent.getAssetManager();
-		assetManager.load("data/normalFont.fnt", BitmapFont.class, fontParameters);
+		assetManager.load("data/loadingFont.fnt", BitmapFont.class, fontParameters);
 		assetManager.finishLoading();
-		_fontText = assetManager.get("data/normalFont.fnt", BitmapFont.class);
+		_fontLoading = assetManager.get("data/loadingFont.fnt", BitmapFont.class);
 
 		
 		// Create buttons
@@ -172,6 +173,7 @@ public class StateGame extends State {
 		
 		assetManager.load("data/timeFont.fnt", BitmapFont.class, fontParameters);
 		assetManager.load("data/scoreFont.fnt", BitmapFont.class, fontParameters);
+		assetManager.load("data/normalFont.fnt", BitmapFont.class, fontParameters);
 		
 		// Load textures
 		assetManager.load("data/scoreBackground.png", Texture.class);
@@ -219,6 +221,7 @@ public class StateGame extends State {
 		_imgTimeBackground = null;
 		_fontTime = null;
 		_fontScore = null;
+		_fontText = null;
 		_match1SFX = null;
 		_match2SFX = null;
 		_match3SFX = null;
@@ -245,13 +248,13 @@ public class StateGame extends State {
 		AssetManager assetManager = _parent.getAssetManager();
 		assetManager.unload("data/timeFont.fnt");
 		assetManager.unload("data/scoreFont.fnt");
+		assetManager.unload("data/normalFont.fnt");
 		assetManager.unload("data/scoreBackground.png");
 		assetManager.unload("data/buttonBackground.png");
 		assetManager.unload("data/buttonBackgroundPressed.png");
 		assetManager.unload("data/board.png");
 		assetManager.unload("data/selector.png");
 		assetManager.unload("data/timeBackground.png");
-		assetManager.unload("data/loadingBanner.png");
 		assetManager.unload("data/gemWhite.png");
 		assetManager.unload("data/gemRed.png");
 		assetManager.unload("data/gemPurple.png");
@@ -280,6 +283,7 @@ public class StateGame extends State {
 		// Load fonts
 		_fontTime = assetManager.get("data/timeFont.fnt", BitmapFont.class);
 		_fontScore = assetManager.get("data/scoreFont.fnt", BitmapFont.class);
+		_fontText = assetManager.get("data/normalFont.fnt", BitmapFont.class);
 		
 		// Load textures
 		_imgScoreBackground = new TextureRegion(assetManager.get("data/scoreBackground.png", Texture.class));
@@ -606,11 +610,11 @@ public class StateGame extends State {
 		// STATE LOADING
 		if (_state == State.Loading) {
 			String loading = _lang.getString("Loading...");
-			TextBounds bounds = _fontText.getBounds(loading);
-			_fontText.draw(batch,
-						   loading,
-						   (Freegemas.VIRTUAL_WIDTH - bounds.width) / 2,
-						   (Freegemas.VIRTUAL_HEIGHT - bounds.height) / 2);
+			TextBounds bounds = _fontLoading.getBounds(loading);
+			_fontLoading.draw(batch,
+							  loading,
+							  (Freegemas.VIRTUAL_WIDTH - bounds.width) / 2,
+							  (Freegemas.VIRTUAL_HEIGHT - bounds.height) / 2);
 			
 			return;
 		}
@@ -1036,5 +1040,10 @@ public class StateGame extends State {
 		
 		// Restart the time (two minutes)
 		_remainingTime = 120; 
+	}
+	
+	@Override
+	public void resume() {
+		_state = State.Loading;
 	}
 }

@@ -107,8 +107,11 @@ public class Button {
 	
 	public void setBackground(TextureRegion background) {
 		_background = background;
-		_width = _background.getRegionWidth();
-		_height = -_background.getRegionHeight();
+		
+		if (background != null) {
+			_width = _background.getRegionWidth();
+			_height = -_background.getRegionHeight();
+		}
 	}
 	
 	public void setBackgroundClicked(TextureRegion backgroundClicked) {
