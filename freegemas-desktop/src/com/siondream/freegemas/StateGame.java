@@ -135,8 +135,9 @@ public class StateGame extends State {
 		// Create buttons
 		_hintButton = new Button(_parent, 180, 345, _lang.getString("Hint"));
 		_resetButton = new Button(_parent, 180, 430, _lang.getString("Reset"));
-		_exitButton = new Button(_parent, 180, 515, _lang.getString("Exit"));
-		_musicButton = new Button(_parent, 180, 600, _lang.getString("Turn off music"));
+		_musicButton = new Button(_parent, 180, 515, _lang.getString("Turn off music"));
+		_exitButton = new Button(_parent, 180, 600, _lang.getString("Exit"));
+		
 		
 		// Creare board
 		_board = new Board();
@@ -355,10 +356,9 @@ public class StateGame extends State {
 		_song = assetManager.get("data/music1.ogg", Music.class);
 		
 		// Play music if it wasn´t playing
-		if (!_song.isPlaying() &&_musicButton.getText().equals("Turn off music"))
-		{
+		if (!_song.isPlaying()) {
 			_song.setLooping(true);
-	        //_song.play();
+	        _song.play();
 		}
 		
 		Gdx.input.setInputProcessor(this);
@@ -859,7 +859,7 @@ public class StateGame extends State {
 	            else {
 	            	_musicButton.setText(_lang.getString("Turn off music"));
 	            	_song.setLooping(true);
-	                //_song.play();
+	                _song.play();
 	            }	    
 	        }
 	        else if (_resetButton.isClicked((int)_mousePos.x, (int)_mousePos.y)) {

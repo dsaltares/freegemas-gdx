@@ -42,6 +42,9 @@ public class StateMenu extends State {
 	private int _selectedOption;
 	private ArrayList<Pair<String, String>> _options;
 	
+	// Gems animation
+	GemsAnimation _gems;
+	
 	// Animation time
 	private double _animTime;
 	private double _animLogoTime;
@@ -107,6 +110,14 @@ public class StateMenu extends State {
 		assetManager.load("data/mainMenuBackground.png", Texture.class);
 		assetManager.load("data/mainMenuLogo.png", Texture.class);
 		assetManager.load("data/menuHighlight.png", Texture.class);
+		assetManager.load("data/gemWhite.png", Texture.class);
+		assetManager.load("data/gemRed.png", Texture.class);
+		assetManager.load("data/gemPurple.png", Texture.class);
+		assetManager.load("data/gemOrange.png", Texture.class);
+		assetManager.load("data/gemGreen.png", Texture.class);
+		assetManager.load("data/gemYellow.png", Texture.class);
+		assetManager.load("data/gemBlue.png", Texture.class);
+		
 		
 		// Load fonts
 		BitmapFontLoader.BitmapFontParameter fontParameters = new BitmapFontLoader.BitmapFontParameter();
@@ -128,6 +139,15 @@ public class StateMenu extends State {
 		assetManager.unload("data/mainMenuLogo.png");
 		assetManager.unload("data/menuHighlight.png");
 		assetManager.unload("data/menuFont.fnt");
+		assetManager.unload("data/gemWhite.png");
+		assetManager.unload("data/gemRed.png");
+		assetManager.unload("data/gemPurple.png");
+		assetManager.unload("data/gemOrange.png");
+		assetManager.unload("data/gemGreen.png");
+		assetManager.unload("data/gemYellow.png");
+		assetManager.unload("data/gemBlue.png");
+		
+		_gems = null;
 	}
 	
 	@Override
@@ -157,9 +177,11 @@ public class StateMenu extends State {
 			}
 		}
 		
-		_menuStart = new Vector2((Freegemas.VIRTUAL_WIDTH - maxWidth) / 2, 350);
+		_menuStart = new Vector2((Freegemas.VIRTUAL_WIDTH - maxWidth) / 2, 390);
 		_menuGap = 100;
 		_menuEnd = new Vector2(_menuStart.x + maxWidth, 350 + _options.size() * _menuGap);
+		
+		_gems = new GemsAnimation(_parent);
 		
 		Gdx.input.setInputProcessor(this);
 	}
@@ -221,7 +243,7 @@ public class StateMenu extends State {
 	        _fontMenu.draw(batch, _options.get(i).getFirst(), (Freegemas.VIRTUAL_WIDTH - bounds.width) / 2, _menuStart.y + i * _menuGap);
 		}
 
-	    //jewelAnim . draw();
+	    _gems.draw(Gdx.graphics.getDeltaTime());
 		
 		if (_readyToChange) {
 		    batch.draw(_imgHighlight,
