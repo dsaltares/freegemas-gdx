@@ -10,6 +10,7 @@ import java.util.Map.Entry;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
@@ -37,6 +38,9 @@ public class StateMenu extends State {
 	// Font
 	private BitmapFont _fontMenu;
 	private BitmapFont _fontLoading;
+	
+	// Sound
+	private Sound _selectSFX;
 	
 	// Options
 	private int _selectedOption;
@@ -123,6 +127,9 @@ public class StateMenu extends State {
 		BitmapFontLoader.BitmapFontParameter fontParameters = new BitmapFontLoader.BitmapFontParameter();
 		fontParameters.flip = true;
 		assetManager.load("data/menuFont.fnt", BitmapFont.class, fontParameters);
+		
+		// Sound
+		assetManager.load("data/select.ogg", Sound.class);
 	}
 	
 	@Override
@@ -132,6 +139,7 @@ public class StateMenu extends State {
 		_imgLogo = null;
 		_imgHighlight = null;
 		_fontMenu = null;
+		_selectSFX = null;
 		
 		// Unload resources
 		AssetManager assetManager = _parent.getAssetManager();
@@ -146,6 +154,7 @@ public class StateMenu extends State {
 		assetManager.unload("data/gemGreen.png");
 		assetManager.unload("data/gemYellow.png");
 		assetManager.unload("data/gemBlue.png");
+		assetManager.unload("data/select.ogg");
 		
 		_gems = null;
 	}
@@ -162,6 +171,8 @@ public class StateMenu extends State {
 		_imgBackground.flip(false, true);
 		_imgLogo.flip(false, true);
 		_imgHighlight.flip(false, true);
+		
+		_selectSFX = assetManager.get("data/select.ogg", Sound.class);
 		
 		// Set positions now that we now about sizes
 		
@@ -256,6 +267,8 @@ public class StateMenu extends State {
 	public boolean touchDown(int arg0, int arg1, int arg2, int arg3) {
 		// Left click		
 		if (arg3 == 0) {
+			
+			_selectSFX.play();
 			
 			int currentOption = getOption();
 			

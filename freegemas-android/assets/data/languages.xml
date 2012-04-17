@@ -12,6 +12,8 @@
 		<string key="Exit" value="Exit" />
 		<string key="Turn off music" value="Turn off music" />
 		<string key="Turn on music" value="Turn on music" />
+		<string key="Best scores" value="Best scores" />
+		<string key="You're top 5! Enter your name" value="You're top 5! Enter your name" />
 		
 		<!--  Menu  -->
 		<string key="Timetrial mode" value="Timetrial mode" />
@@ -38,6 +40,8 @@
 		<string key="Exit" value="Salir" />
 		<string key="Turn off music" value="Musica off" />
 		<string key="Turn on music" value="Musica on" />
+		<string key="Best scores" value="Mejores puntuaciones" />
+		<string key="You're top 5! Enter your name" value="Estas en el top 5! Escribe tu nombre" />
 		
 		<!--  Menu  -->
 		<string key="Timetrial mode" value="Contrarreloj" />

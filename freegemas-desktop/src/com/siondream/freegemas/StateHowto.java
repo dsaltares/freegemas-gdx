@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
+import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -25,6 +26,7 @@ public class StateHowto extends State {
 	private BitmapFont _fontTitle;
 	private BitmapFont _fontText;
 	private BitmapFont _fontLoading;
+	private Sound _selectSFX;
 	
 	// Languages manager
 	private LanguagesManager _lang;
@@ -88,6 +90,7 @@ public class StateHowto extends State {
 		fontParameters.flip = true;
 		assetManager.load("data/menuFont.fnt", BitmapFont.class, fontParameters);
 		assetManager.load("data/helpFont.fnt", BitmapFont.class, fontParameters);
+		assetManager.load("data/select.ogg", Sound.class);
 	}
 	
 	@Override
@@ -96,12 +99,14 @@ public class StateHowto extends State {
 		_imgBackground = null;
 		_fontTitle = null;
 		_fontText = null;
+		_selectSFX = null;
 		
 		// Unload resources
 		AssetManager assetManager = _parent.getAssetManager();
 		assetManager.unload("data/howtoScreen.png");
 		assetManager.unload("data/helpFont.fnt");
 		assetManager.unload("data/menuFont.fnt");
+		assetManager.unload("data/select.ogg");
 	}
 	
 	@Override
@@ -111,6 +116,7 @@ public class StateHowto extends State {
 		_imgBackground = new TextureRegion(assetManager.get("data/howtoScreen.png", Texture.class));
 		_fontTitle = assetManager.get("data/menuFont.fnt", BitmapFont.class);
 		_fontText = assetManager.get("data/helpFont.fnt", BitmapFont.class);
+		_selectSFX = assetManager.get("data/select.ogg", Sound.class);
 		
 		_imgBackground.flip(false, true);
 		
@@ -158,6 +164,9 @@ public class StateHowto extends State {
 	@Override
 	public boolean touchDown(int arg0, int arg1, int arg2, int arg3) {
 		_readyToChange = true;
+		
+		_selectSFX.play();
+		
 		return false;
 	}
 

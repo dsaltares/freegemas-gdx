@@ -88,7 +88,7 @@ public class StateGame extends State {
 	private BitmapFont _fontScore;
 	private BitmapFont _fontText;
 	private BitmapFont _fontLoading;
-	public static final String FONT_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;,{}\"´`'<>";
+	public static final String FONT_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;,{}\"ï¿½`'<>";
 	
 	// Starting time
 	private double _remainingTime;
@@ -113,6 +113,9 @@ public class StateGame extends State {
 	
 	// Language manager
 	private LanguagesManager _lang;
+	
+	// Scores table
+	private ScoreTable _scoreTable;
 	
 	public StateGame(Freegemas freegemas) {
 		super(freegemas);
@@ -175,6 +178,7 @@ public class StateGame extends State {
 		assetManager.load("data/timeFont.fnt", BitmapFont.class, fontParameters);
 		assetManager.load("data/scoreFont.fnt", BitmapFont.class, fontParameters);
 		assetManager.load("data/normalFont.fnt", BitmapFont.class, fontParameters);
+		assetManager.load("data/menuFont.fnt", BitmapFont.class, fontParameters);
 		
 		// Load textures
 		assetManager.load("data/scoreBackground.png", Texture.class);
@@ -250,6 +254,7 @@ public class StateGame extends State {
 		assetManager.unload("data/timeFont.fnt");
 		assetManager.unload("data/scoreFont.fnt");
 		assetManager.unload("data/normalFont.fnt");
+		assetManager.unload("data/menuFont.fnt");
 		assetManager.unload("data/scoreBackground.png");
 		assetManager.unload("data/buttonBackground.png");
 		assetManager.unload("data/buttonBackgroundPressed.png");
@@ -355,7 +360,7 @@ public class StateGame extends State {
 		_fallSFX = assetManager.get("data/fall.ogg", Sound.class);
 		_song = assetManager.get("data/music1.ogg", Music.class);
 		
-		// Play music if it wasn´t playing
+		// Play music if it wasnï¿½t playing
 		if (!_song.isPlaying()) {
 			_song.setLooping(true);
 	        _song.play();
@@ -564,7 +569,7 @@ public class StateGame extends State {
 	        if((_animTime += deltaT) >= _animTotalInitTime){
 
 	            // Create a new score table
-	            // _scoreTable = new ScoreTable(_parent, _points);
+	            _scoreTable = new ScoreTable(_parent, _points);
 
 	            // Switch to the following state
 	            _state = State.ShowingScoreTable;
@@ -810,6 +815,11 @@ public class StateGame extends State {
 	        }
 		}
 		
+		// Score table
+		if (_scoreTable != null && _state == State.ShowingScoreTable) {
+			_scoreTable.draw();
+		}
+		
 		// Draw each score little message
 		int numScores = _floatingScores.size();
 		
@@ -823,6 +833,7 @@ public class StateGame extends State {
 		for (int i = 0; i < numParticles; ++i) {
 			_effects.get(i).draw(batch);
 		}
+		
 	}
 	
 	@Override
@@ -867,7 +878,7 @@ public class StateGame extends State {
 	            gemsOutScreen();
 	            resetGame();
 	        }
-	        else if (overGem((int)_mousePos.x, (int)_mousePos.y)) { // Si se pulsó sobre una gema
+	        else if (overGem((int)_mousePos.x, (int)_mousePos.y)) { // Si se pulsï¿½ sobre una gema
 	            _selectSFX.play();
 
 	            if (_state == State.Wait) { // Si no hay ninguna gema marcada
@@ -877,7 +888,7 @@ public class StateGame extends State {
 	                _selectedSquareFirst.y = coord.y;
 	            }
 
-	            else if (_state == State.SelectedGem) { // Si ya había una gema marcada
+	            else if (_state == State.SelectedGem) { // Si ya habï¿½a una gema marcada
 	                if (!checkClickedSquare((int)_mousePos.x, (int)_mousePos.y)) {
 	                    _selectedSquareFirst.x = -1;
 	                    _selectedSquareFirst.y = -1;
@@ -1041,7 +1052,7 @@ public class StateGame extends State {
 		redrawScoreBoard();
 		
 		// Restart the time (two minutes)
-		_remainingTime = 120; 
+		_remainingTime = 5; 
 	}
 	
 	@Override
