@@ -226,6 +226,9 @@ public class Freegemas implements ApplicationListener {
 			
 			// Resume state
 			_currentState.resume();
+			
+			// Listen to back key (android)
+			Gdx.input.setCatchBackKey(true);
 		}
 	}
 	

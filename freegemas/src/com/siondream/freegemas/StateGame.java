@@ -3,6 +3,7 @@ package com.siondream.freegemas;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
 import com.badlogic.gdx.audio.Music;
@@ -838,6 +839,10 @@ public class StateGame extends State {
 	
 	@Override
 	public boolean keyDown(int arg0) {
+		if(arg0 == Keys.BACK){
+			_parent.changeState("StateMenu");
+		}
+		
 		return false;
 	}
 	
@@ -927,7 +932,7 @@ public class StateGame extends State {
 		
 		return false;
 	}
-	
+
 	private void gemsOutScreen() {
 	    for(int x = 0; x < 8; ++x){
 	        for(int y = 0; y < 8; ++y){
@@ -1052,7 +1057,7 @@ public class StateGame extends State {
 		redrawScoreBoard();
 		
 		// Restart the time (two minutes)
-		_remainingTime = 5; 
+		_remainingTime = 120; 
 	}
 	
 	@Override

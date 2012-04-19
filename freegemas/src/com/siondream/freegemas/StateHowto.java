@@ -3,6 +3,7 @@ package com.siondream.freegemas;
 import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
 import com.badlogic.gdx.audio.Sound;
@@ -174,6 +175,15 @@ public class StateHowto extends State {
 	public boolean touchUp(int arg0, int arg1, int arg2, int arg3) {
 		// Left click		
 		if (arg3 == 0 && _readyToChange) {
+			_parent.changeState("StateMenu");
+		}
+		
+		return false;
+	}
+	
+	@Override
+	public boolean keyDown(int arg0) {
+		if(arg0 == Keys.BACK){
 			_parent.changeState("StateMenu");
 		}
 		
