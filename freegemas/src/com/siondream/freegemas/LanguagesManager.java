@@ -11,24 +11,22 @@ public class LanguagesManager {
 	private static LanguagesManager _instance = null;
 	
 	private static final String LANGUAGES_FILE = "data/languages.xml";
+	private static final String DEFAULT_LANGUAGE = "en_UK";
 	
-	private HashMap<String, HashMap<String, String>> _strings = null;
-	private HashMap<String, String> _currentLanguage = null;
-	private String _currentLanguageName = null;
+	//private HashMap<String, HashMap<String, String>> _strings = null;
+	private HashMap<String, String> _language = null;
+	private String _languageName = null;
 	
 	private LanguagesManager() {
-		// Create dictionary
-		_strings = new HashMap<String, HashMap<String, String>>();
+		// Create language map
+		_language = new HashMap<String, String>();
 		
-		// Parse strings file
-		loadLanguagesFile();
-		
-		// Set system language
-		System.out.println("System language: " + java.util.Locale.getDefault().toString());
-		HashMap<String, String> systemLanguage = _strings.get(java.util.Locale.getDefault().toString());
-		
-		if (systemLanguage != null) {
-			_currentLanguage = systemLanguage;
+		// Try to load system language
+		// If it fails, fallback to default language
+		_languageName = java.util.Locale.getDefault().toString();
+		if (!loadLanguage(_languageName)) {
+			loadLanguage(DEFAULT_LANGUAGE);
+			_languageName = DEFAULT_LANGUAGE;
 		}
 	}
 	
@@ -40,25 +38,16 @@ public class LanguagesManager {
 		return _instance;
 	}
 	
-	public void setLanguage(String languageName) {
-		HashMap<String, String> language = _strings.get(languageName);
-		
-		if (language != null) {
-			_currentLanguage = language;
-			_currentLanguageName = languageName;
-		}
-	}
-	
 	public String getLanguage() {
-		return _currentLanguageName;
+		return _languageName;
 	}
-	
+
 	public String getString(String key) {
 		String string;
 		
-		if (_currentLanguage != null) {
+		if (_language != null) {
 			// Look for string in selected language
-			string = _currentLanguage.get(key);
+			string = _language.get(key);
 			
 			if (string != null) {
 				return string;
@@ -69,42 +58,39 @@ public class LanguagesManager {
 		return key;
 	}
 	
-	private void loadLanguagesFile() {
+	private boolean loadLanguage(String languageName) {
 		try {
 			XmlReader reader = new XmlReader();
 			Element root = reader.parse(Gdx.files.internal(LANGUAGES_FILE));
 			
-			 Array<Element> languages =  root.getChildrenByNameRecursively("language");
+			Array<Element> languages =  root.getChildrenByNameRecursively("language");
 			 
+			// Iterate through every language to fetch the one we're interested in
 			 for (int i = 0; i < languages.size; ++i) {
-				 // Get language name and whether if it´s the default one or not
 				 Element languageElement = languages.get(i);
-				 String languageName = languageElement.getAttribute("name");
-				 System.out.println("Language name: " + languageName);
-
-				 // Create hashmap element for that language
-				 HashMap<String, String> language = new HashMap<String, String>();
-				 _strings.put(languageName, language);
 				 
-				 // Fetch every string for that language
-				 Array<Element> strings = languageElement.getChildrenByName("string");
-				 
-				 for (int j = 0; j < strings.size; ++j) {
-					 Element stringElement = strings.get(j);
-					 String key = stringElement.getAttribute("key");
-					 String value = stringElement.getAttribute("value");
-					 language.put(key, value);
-				 }
-				 
-				 // By default, the current language is the first one
-				 if (i == 0) {
-					 _currentLanguage = language;
-					 _currentLanguageName = languageName;
+				 // If it's the language we're looking for
+				 if (languageElement.getAttribute("name").equals(languageName)) {
+					 // Empty language
+					 _language.clear();
+					 
+					// Fetch every string for that language
+					 Array<Element> strings = languageElement.getChildrenByName("string");
+					 
+					 for (int j = 0; j < strings.size; ++j) {
+						 Element stringElement = strings.get(j);
+						 _language.put(stringElement.getAttribute("key"), stringElement.getAttribute("value"));
+					 }
+					 
+					 return true;
 				 }
 			 }
+			
 		}
 		catch (Exception e) {
 			System.out.println("Error loading languages file " + LANGUAGES_FILE);
 		}
+		
+		return false;
 	}
 }
