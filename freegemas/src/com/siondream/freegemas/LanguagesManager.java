@@ -1,11 +1,12 @@
 package com.siondream.freegemas;
 
 import java.util.HashMap;
+import javax.xml.parsers.*;
+
+import org.w3c.dom.*;
 
 import com.badlogic.gdx.Gdx;
-import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.XmlReader;
-import com.badlogic.gdx.utils.XmlReader.Element;
+import com.badlogic.gdx.files.FileHandle;
 
 public class LanguagesManager {
 	private static LanguagesManager _instance = null;
@@ -60,35 +61,37 @@ public class LanguagesManager {
 	
 	public boolean loadLanguage(String languageName) {
 		try {
-			XmlReader reader = new XmlReader();
-			Element root = reader.parse(Gdx.files.internal(LANGUAGES_FILE));
+			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+			DocumentBuilder db = dbf.newDocumentBuilder();
+			FileHandle fileHandle = Gdx.files.internal(LANGUAGES_FILE);
+			Document doc = db.parse(fileHandle.read());
 			
-			Array<Element> languages =  root.getChildrenByNameRecursively("language");
-			 
-			// Iterate through every language to fetch the one we're interested in
-			 for (int i = 0; i < languages.size; ++i) {
-				 Element languageElement = languages.get(i);
-				 
-				 // If it's the language we're looking for
-				 if (languageElement.getAttribute("name").equals(languageName)) {
-					 // Empty language
-					 _language.clear();
-					 
-					// Fetch every string for that language
-					 Array<Element> strings = languageElement.getChildrenByName("string");
-					 
-					 for (int j = 0; j < strings.size; ++j) {
-						 Element stringElement = strings.get(j);
-						 _language.put(stringElement.getAttribute("key"), stringElement.getAttribute("value"));
-					 }
-					 
-					 return true;
-				 }
-			 }
+			Element root = doc.getDocumentElement();
 			
+			NodeList languages = root.getElementsByTagName("language");
+			int numLanguages = languages.getLength();
+			
+			for (int i = 0; i < numLanguages; ++i) {
+				Node language = languages.item(i);
+				
+				if (language.getAttributes().getNamedItem("name").getTextContent().equals(languageName)) {
+					_language.clear();
+					Element languageElement = (Element)language;
+					NodeList strings = languageElement.getElementsByTagName("string");
+					int numStrings = strings.getLength();
+					
+					for (int j = 0; j < numStrings; ++j) {
+						NamedNodeMap attributes = strings.item(j).getAttributes();
+						_language.put(attributes.getNamedItem("key").getTextContent(), attributes.getNamedItem("value").getTextContent());
+					}
+					
+					return true;
+				}
+			}
 		}
 		catch (Exception e) {
 			System.out.println("Error loading languages file " + LANGUAGES_FILE);
+			return false;
 		}
 		
 		return false;

@@ -17,6 +17,7 @@ import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 
@@ -82,12 +83,15 @@ public class StateMenu extends State {
 		_fontMenu = null;
 		
 		// Load font resource
-		BitmapFontLoader.BitmapFontParameter fontParameters = new BitmapFontLoader.BitmapFontParameter();
-		fontParameters.flip = true;
-		AssetManager assetManager = _parent.getAssetManager();
-		assetManager.load("data/loadingFont.fnt", BitmapFont.class, fontParameters);
-		assetManager.finishLoading();
-		_fontLoading = assetManager.get("data/loadingFont.fnt", BitmapFont.class);
+//		BitmapFontLoader.BitmapFontParameter fontParameters = new BitmapFontLoader.BitmapFontParameter();
+//		fontParameters.flip = true;
+//		AssetManager assetManager = _parent.getAssetManager();
+//		assetManager.load("data/loadingFont.fnt", BitmapFont.class, fontParameters);
+//		assetManager.finishLoading();
+//		_fontLoading = assetManager.get("data/loadingFont.fnt", BitmapFont.class);
+		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("data/normal.ttf"));
+		_fontLoading = generator.generateFont(150, FreeTypeFontGenerator.DEFAULT_CHARS, true);
+		generator.dispose();
 		
 		// Menu options
 		_selectedOption = 0;
