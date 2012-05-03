@@ -8,5 +8,6 @@
 	<classpathentry kind="lib" path="/freegemas/libs/gdx-backend-jogl.jar"/>
 	<classpathentry kind="lib" path="/freegemas/libs/gdx-natives.jar"/>
 	<classpathentry kind="lib" path="/freegemas/libs/gdx.jar"/>
+	<classpathentry kind="lib" path="libs/gdx-freetype-natives.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

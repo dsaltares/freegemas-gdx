@@ -38,21 +38,17 @@
 		<string key="Hint" value="Pista" />
 		<string key="Reset" value="Reiniciar" />
 		<string key="Exit" value="Salir" />
-		<string key="Turn off music" value="Musica off" />
-		<string key="Turn on music" value="Musica on" />
+		<string key="Turn off music" value="Música off" />
+		<string key="Turn on music" value="Música on" />
 		<string key="Best scores" value="Mejores puntuaciones" />
-		<string key="You're top 5! Enter your name" value="Estas en el top 5! Escribe tu nombre" />
+		<string key="You're top 5! Enter your name" value="Estás en el top 5! Escribe tu nombre" />
 		
 		<!--  Menu  -->
 		<string key="Timetrial mode" value="Contrarreloj" />
-		<string key="How to play" value="Ayuda" />
+		<string key="How to play" value="¿Cómo jugar?" />
 		<string key="Exit" value="Salir" />
 		
 		<!--  How to play  -->
-		<string key="help_text" value="El objetivo del juego es intercambiar una gema con otra adyacente para formar una cadena vertical u horizontal de tres o mas gemas.
-		
-		Pulsa sobre la primera gema y luego sobre la segunda si quieres intercambiarlas. Si el movimiento es correcto, se intercambiaran y desapareceran.
-		
-		Se consiguen bonificaciones cuandos encadenan mas de tres gemas iguales. A veces se producen reacciones en cadenas llamadas cascadas las cuales reciben puntos extra." />
+		<string key="help_text" value="El objetivo del juego es intercambiar una gema con otra adyacente para formar una cadena vertical u horizontal de tres o más gemas.&lt;br /&gt;&lt;br /&gt;Pulsa sobre la primera gema y luego sobre la segunda si quieres intercambiarlas. Si el movimiento es correcto, se intercambiarán y desaparecerán.&lt;br /&gt;&lt;br /&gt;Se consiguen bonificaciones cuando se encadenan más de tres gemas iguales. A veces se producen reacciones en cadenas llamadas cascadas las cuales reciben puntos extra." />
 	</language>
 </languages>

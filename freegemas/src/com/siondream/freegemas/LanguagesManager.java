@@ -82,7 +82,11 @@ public class LanguagesManager {
 					
 					for (int j = 0; j < numStrings; ++j) {
 						NamedNodeMap attributes = strings.item(j).getAttributes();
-						_language.put(attributes.getNamedItem("key").getTextContent(), attributes.getNamedItem("value").getTextContent());
+						String key = attributes.getNamedItem("key").getTextContent();
+						String value = attributes.getNamedItem("value").getTextContent();
+						System.out.println(value);
+						value = value.replace("<br />", "\n");
+						_language.put(key, value);
 					}
 					
 					return true;
