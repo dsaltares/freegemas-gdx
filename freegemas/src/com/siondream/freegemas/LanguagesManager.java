@@ -59,6 +59,10 @@ public class LanguagesManager {
 		return key;
 	}
 	
+	public String getString(String key, Object... args) {
+		return String.format(getString(key), args);
+	}
+	
 	public boolean loadLanguage(String languageName) {
 		try {
 			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();

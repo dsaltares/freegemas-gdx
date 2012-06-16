@@ -21,11 +21,7 @@
 		<string key="Exit" value="Exit" />
 		
 		<!--  How to play  -->
-		<string key="help_text" value="The objective of the game is to swap one gem with an adjacent gem to form a horizontal or vertical chain of three or more gems.
-		
-		Click the first gem and then click the gem you want to swap it with. If the movement is correct, they will swap and the chained gems will disappear.
-		
-		Bonus points are given when more than three identical gems are formed. Sometimes chain reactions, called cascades, are triggered, where chains are formed by the falling gems. Cascades are awarded with bonus points." />
+		<string key="help_text" value="The objective of the game is to swap one gem with an adjacent gem to form a horizontal or vertical chain of three or more gems.&lt;br /&gt;&lt;br /&gt;Click the first gem and then click the gem you want to swap it with. If the movement is correct, they will swap and the chained gems will disappear.&lt;br /&gt;&lt;br /&gt;Bonus points are given when more than three identical gems are formed. Sometimes chain reactions, called cascades, are triggered, where chains are formed by the falling gems. Cascades are awarded with bonus points." />
 	</language>
 	
 	<!-- Spanish -->
