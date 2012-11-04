@@ -6,7 +6,12 @@ freegemas-gdx
 =============
 
 Freegemas libGDX is an Android, HTML 5 and Java desktop port of Freegemas, which in turn is an open source version of the
-well known Bejeweled. Check the original version by JosÈ Tom·s Tocino GarcÌa [here](http://code.google.com/p/freegemas/).
+well known Bejeweled. Check the original version by Jos√© Tom√°s Tocino Garc√≠a [here](http://code.google.com/p/freegemas/).
+
+###Downloads###
+
+* [Android](https://play.google.com/store/apps/details?id=com.siondream.freegemas)
+* [Windows/Linux/Mac](https://github.com/downloads/siondream/freegemas-gdx/freegemas-1.0.jar)
 
 ###NEWS###
 
