@@ -23,8 +23,13 @@ public class LanguagesManager {
 		_language = new HashMap<String, String>();
 		
 		// Try to load system language
-		// If it fails, fallback to default language
-		_languageName = java.util.Locale.getDefault().toString();
+		PlatformResolver resolver = Freegemas.getPlatformResolver();
+		
+		if (resolver != null) {
+			_languageName = resolver.getDefaultLanguage();
+		}
+		
+		
 		if (!loadLanguage(_languageName)) {
 			loadLanguage(DEFAULT_LANGUAGE);
 			_languageName = DEFAULT_LANGUAGE;

@@ -1,6 +1,5 @@
 package com.siondream.freegemas;
 
-import java.io.IOException;
 import java.io.StringWriter;
 import java.util.ArrayList;
 
@@ -149,6 +148,7 @@ public class ScoreTable implements Input.TextInputListener {
 			
 			
 			System.out.println(writer.toString());
+			xml.close();
 		}
 		catch (Exception e) {
 			

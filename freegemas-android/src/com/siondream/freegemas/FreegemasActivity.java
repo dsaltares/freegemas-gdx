@@ -4,7 +4,6 @@ import com.badlogic.gdx.backends.android.AndroidApplication;
 import com.badlogic.gdx.backends.android.AndroidApplicationConfiguration;
 
 import android.os.Bundle;
-import android.util.Log;
 
 public class FreegemasActivity extends AndroidApplication {
     /** Called when the activity is first created. */
@@ -13,6 +12,8 @@ public class FreegemasActivity extends AndroidApplication {
         super.onCreate(savedInstanceState);
         
         Freegemas.platform = Freegemas.Platform.Android;
+        
+        Freegemas.setPlatformResolver(new AndroidResolver());
         
         AndroidApplicationConfiguration config = new AndroidApplicationConfiguration();
 		config.useAccelerometer = false;

@@ -42,7 +42,6 @@ public class StateGame extends State {
 	// Selected squares
 	private Coord _selectedSquareFirst;
 	private Coord _selectedSquareSecond;
-	private boolean _clicking;
 	
 	// Hints
 	private double _showingHint;
@@ -854,8 +853,6 @@ public class StateGame extends State {
 	@Override
 	public boolean touchDown(int arg0, int arg1, int arg2, int arg3) {
 		if (arg3 == 0){ // Left mouse button clicked
-	        _clicking = true;
-
 	        _mousePos.x = arg0;
 	        _mousePos.y = arg1;
 	        _parent.getCamera().unproject(_mousePos);
@@ -909,8 +906,6 @@ public class StateGame extends State {
 	@Override
 	public boolean touchUp(int arg0, int arg1, int arg2, int arg3) {
 		if (arg3 == 0){ // Left mouse button clicked
-	        _clicking = false;
-	        
 	        _mousePos.x = arg0;
 	        _mousePos.y = arg1;
 	        _parent.getCamera().unproject(_mousePos);

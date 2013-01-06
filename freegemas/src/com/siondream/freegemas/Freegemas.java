@@ -45,6 +45,8 @@ public class Freegemas implements ApplicationListener {
 	
 	private Logger _logger = null;
 	
+	private static PlatformResolver _platformResolver = null;
+	
 	@Override
 	public void create() {
 		// Logger
@@ -61,9 +63,6 @@ public class Freegemas implements ApplicationListener {
 		
 		// Create states table
 		_states = new HashMap<String, State>();
-		
-		// Init animation system
-		Animation.init();
 		
 		// Load general assets
 		_assetManager.load("data/handCursor.png", Texture.class);
@@ -200,6 +199,14 @@ public class Freegemas implements ApplicationListener {
 	
 	public OrthographicCamera getCamera() {
 		return _camera;
+	}
+	
+	public static PlatformResolver getPlatformResolver() {
+		return _platformResolver;
+	}
+	
+	public static void setPlatformResolver(PlatformResolver platformResolver) {
+		_platformResolver = platformResolver;
 	}
 	
 	private void performPendingStateChange() {
