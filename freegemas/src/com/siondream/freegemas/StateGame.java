@@ -1,7 +1,7 @@
 package com.siondream.freegemas;
 
-import java.util.ArrayList;
 
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.assets.AssetManager;
@@ -13,11 +13,14 @@ import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.ParticleEffect;
+import com.badlogic.gdx.graphics.g2d.ParticleEffectPool;
+import com.badlogic.gdx.graphics.g2d.ParticleEffectPool.PooledEffect;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 
 public class StateGame extends State {
 
@@ -102,11 +105,12 @@ public class StateGame extends State {
 	private Music _song;
 	
 	// Floating scores
-	private ArrayList<FloatingScore> _floatingScores;
+	private Array<FloatingScore> _floatingScores;
 	
 	// Particle effects
 	private ParticleEffect _effect;
-	private ArrayList<ParticleEffect> _effects;
+	private ParticleEffectPool _effectPool;
+	private Array<PooledEffect> _effects;
 	
 	// Mouse pos
 	private Vector3 _mousePos = null;
@@ -116,6 +120,10 @@ public class StateGame extends State {
 	
 	// Scores table
 	private ScoreTable _scoreTable;
+	
+	// Aux variables
+	private Color _imgColor = Color.WHITE.cpy();
+	private Coord _coord = new Coord();
 	
 	public StateGame(Freegemas freegemas) {
 		super(freegemas);
@@ -152,7 +160,7 @@ public class StateGame extends State {
 		_selectedSquareSecond = new Coord(-1, -1);
 		
 		// Scores
-		_floatingScores = new ArrayList<FloatingScore>();
+		_floatingScores = new Array<FloatingScore>();
 		
 		// Mouse pos
 		_mousePos = new Vector3();
@@ -160,8 +168,9 @@ public class StateGame extends State {
 		// Particle effects
 		_effect = new ParticleEffect();
 		_effect.load(Gdx.files.internal("data/particleStars"), Gdx.files.internal("data"));
+		_effectPool = new ParticleEffectPool(_effect, 20, 100);
 		
-		_effects = new ArrayList<ParticleEffect>();
+		_effects = new Array<PooledEffect>();
 		
 		// Init game for the first time
 		init();
@@ -200,12 +209,14 @@ public class StateGame extends State {
 		assetManager.load("data/iconMusic.png", Texture.class);
 		
 		// Load SFX and music
-		assetManager.load("data/match1.ogg", Sound.class);
-		assetManager.load("data/match2.ogg", Sound.class);
-		assetManager.load("data/match3.ogg", Sound.class);
-		assetManager.load("data/select.ogg", Sound.class);
-		assetManager.load("data/fall.ogg", Sound.class);
-		assetManager.load("data/music1.ogg", Music.class);
+		if (Gdx.app.getType() != ApplicationType.WebGL) {
+			assetManager.load("data/match1.ogg", Sound.class);
+			assetManager.load("data/match2.ogg", Sound.class);
+			assetManager.load("data/match3.ogg", Sound.class);
+			assetManager.load("data/select.ogg", Sound.class);
+			assetManager.load("data/fall.ogg", Sound.class);
+			assetManager.load("data/music1.ogg", Music.class);
+		}
 		
 		resetGame();
 	}
@@ -353,17 +364,19 @@ public class StateGame extends State {
 		_musicButton.setFont(buttonFont);
 		
 		// Load SFX and music
-		_match1SFX = assetManager.get("data/match1.ogg", Sound.class);
-		_match2SFX = assetManager.get("data/match2.ogg", Sound.class);
-		_match3SFX = assetManager.get("data/match3.ogg", Sound.class);
-		_selectSFX = assetManager.get("data/select.ogg", Sound.class);
-		_fallSFX = assetManager.get("data/fall.ogg", Sound.class);
-		_song = assetManager.get("data/music1.ogg", Music.class);
-		
-		// Play music if it wasn�t playing
-		if (!_song.isPlaying()) {
-			_song.setLooping(true);
-	        _song.play();
+		if (Gdx.app.getType() != ApplicationType.WebGL) {
+			_match1SFX = assetManager.get("data/match1.ogg", Sound.class);
+			_match2SFX = assetManager.get("data/match2.ogg", Sound.class);
+			_match3SFX = assetManager.get("data/match3.ogg", Sound.class);
+			_selectSFX = assetManager.get("data/select.ogg", Sound.class);
+			_fallSFX = assetManager.get("data/fall.ogg", Sound.class);
+			_song = assetManager.get("data/music1.ogg", Music.class);
+			
+			// Play music if it wasn't playing
+			if (!_song.isPlaying()) {
+				_song.setLooping(true);
+		        _song.play();
+			}
 		}
 		
 		Gdx.input.setInputProcessor(this);
@@ -389,7 +402,7 @@ public class StateGame extends State {
 		}
 		
 		// Particle effects
-		int numParticles = _effects.size();
+		int numParticles = _effects.size;
 		
 		for (int i = 0; i < numParticles; ++i) {
 			_effects.get(i).update(Gdx.graphics.getDeltaTime());
@@ -401,12 +414,12 @@ public class StateGame extends State {
 		if (_remainingTime > 0) {
 			int minutes = (int)(_remainingTime / 60.0);
 			int seconds = (int)(_remainingTime - minutes * 60);
-			_txtTime = new String("" + minutes);
+			_txtTime = "" + minutes;
 			if (seconds < 10) {
-				_txtTime += new String(":0" + seconds);
+				_txtTime += ":0" + seconds;
 			}
 			else {
-				_txtTime += new String(":" + seconds);
+				_txtTime += ":" + seconds;
 			}
 		}
 		
@@ -483,8 +496,8 @@ public class StateGame extends State {
 				redrawScoreBoard();
 				
 				// Delete squares that were matched on the board
-				for (int i = 0; i < _groupedSquares.size(); ++i) {
-					for (int j = 0; j < _groupedSquares.get(i).size(); ++j) {
+				for (int i = 0; i < _groupedSquares.size; ++i) {
+					for (int j = 0; j < _groupedSquares.get(i).size; ++j) {
 						_board.del((int)_groupedSquares.get(i).get(j).x,
 								   (int)_groupedSquares.get(i).get(j).y);
 					}
@@ -509,7 +522,9 @@ public class StateGame extends State {
 			// When animation ends
 			if ((_animTime += deltaT) >= _animTotalTime) {
 				// Play the fall sound fx
-				_fallSFX.play();
+				if (Gdx.app.getType() != ApplicationType.WebGL) {
+					_fallSFX.play();
+				}
 				
 				// Switch to the next state (waiting)
 				_state = State.Wait;
@@ -524,7 +539,7 @@ public class StateGame extends State {
 	            _groupedSquares = _board.check();
 
 	            // If there are...
-	            if(!_groupedSquares.isEmpty()) {
+	            if(_groupedSquares.size != 0) {
 	                // Increase the score multiplier
 	                ++_multiplier;
 
@@ -539,7 +554,7 @@ public class StateGame extends State {
 	            }
 
 	            // If there are neither current solutions nor possible future solutions
-	            else if(_board.solutions().isEmpty()) {
+	            else if(_board.solutions().size == 0) {
 	                // Make the board disappear
 	                _state = State.DisappearingBoard;
 	                gemsOutScreen();
@@ -587,11 +602,14 @@ public class StateGame extends State {
 	}
 	
 	private void removeEndedParticles() {
-		int numParticles = _effects.size();
+		int numParticles = _effects.size;
 		
 		for (int i = 0; i < numParticles; ++i) {
-			if (_effects.get(i).isComplete()) {
-				_effects.remove(i);
+			PooledEffect effect = _effects.get(i);
+			
+			if (effect.isComplete()) {
+				_effectPool.free(effect);
+				_effects.removeIndex(i);
 				--i;
 				--numParticles;
 			}
@@ -599,11 +617,11 @@ public class StateGame extends State {
 	}
 
 	private void removeEndedFloatingScores() {
-		int numScores = _floatingScores.size();
+		int numScores = _floatingScores.size;
 		
 		for (int i = 0; i < numScores; ++i) {
 			if (_floatingScores.get(i).isFinished()) {
-				_floatingScores.remove(i);
+				_floatingScores.removeIndex(i);
 				--i;
 				--numScores;
 			}
@@ -639,8 +657,8 @@ public class StateGame extends State {
 		batch.draw(_imgScoreBackground, 70, 75);
 		_fontText.draw(batch, _lang.getString("Points"), 78, 40);
 		_fontScore.draw(batch,
-						new String("" + _points),
-						452 - _fontScore.getBounds(new String("" + _points)).width,
+						"" + _points,
+						452 - _fontScore.getBounds("" + _points).width,
 						93);
 		
 		// Draw the time
@@ -697,10 +715,7 @@ public class StateGame extends State {
 	                if (img != null) {
 	                    // Default positions
 	                    float imgX = gemsInitial.x + i * 76;
-	                    float imgY = gemsInitial.y + j * 76;
-
-	                    // Default color
-	                    Color imgColor = new Color(1.0f, 1.0f, 1.0f, 1.0f);
+	                    float imgY = gemsInitial.y + j * 76;	                   
 	                    
 	                    // In the initial state, the gems fall vertically
 	                    // decreasing its speed
@@ -764,14 +779,15 @@ public class StateGame extends State {
 	                    else if (_state == State.DisappearingGems) {
 	                    	// Winning gems disappearing
 	                    	if (_groupedSquares.isMatched(new Coord(i, j))) {
-	                    		imgColor = new Color(1.0f, 1.0f, 1.0f, (1.0f - (float)(_animTime/_animTotalTime)));
+	                    		_imgColor.a = 1.0f - (float)(_animTime/_animTotalTime);
 	                    	}
 	                    }
 	                    
 	                    // Finally draw the image
-	                    batch.setColor(imgColor);
+	                    batch.setColor(_imgColor);
 	                    batch.draw(img, imgX, imgY);
-	                    batch.setColor(new Color(1.0f, 1.0f, 1.0f, 1.0f));
+	                    _imgColor.a = 1.0f;
+	                    batch.setColor(_imgColor);
 
 	                } // End if (img != NULL)
 	                
@@ -808,10 +824,11 @@ public class StateGame extends State {
 	            float x = gemsInitial.x + _coordHint.x * 76;
 	            float y = gemsInitial.y + _coordHint.y * 76;
 
-	            
-	            batch.setColor(new Color(1.0f, 1.0f, 1.0f, 1.0f - p));
+	            _imgColor.a = 1.0f - p;
+	            batch.setColor(_imgColor);
 	            batch.draw(_imgSelector, x, y);
-	            batch.setColor(new Color(1.0f, 1.0f, 1.0f, 1.0f));
+	            _imgColor.a = 1.0f;
+	            batch.setColor(_imgColor);
 	        }
 		}
 		
@@ -821,14 +838,14 @@ public class StateGame extends State {
 		}
 		
 		// Draw each score little message
-		int numScores = _floatingScores.size();
+		int numScores = _floatingScores.size;
 		
 		for (int i = 0; i < numScores; ++i) {
 			_floatingScores.get(i).draw();
 		}
 		
 		// Draw particle systems
-		int numParticles = _effects.size();
+		int numParticles = _effects.size;
 		
 		for (int i = 0; i < numParticles; ++i) {
 			_effects.get(i).draw(batch);
@@ -864,7 +881,7 @@ public class StateGame extends State {
 	        else if (_hintButton.isClicked((int)_mousePos.x, (int)_mousePos.y)) {
 	            showHint();
 	        }
-	        else if (_musicButton.isClicked((int)_mousePos.x, (int)_mousePos.y)) {
+	        else if (Gdx.app.getType() != ApplicationType.WebGL && _musicButton.isClicked((int)_mousePos.x, (int)_mousePos.y)) {
 	            if (_song.isPlaying()) {
 	                _musicButton.setText(_lang.getString("Turn on music"));
 	                _song.stop();
@@ -881,7 +898,9 @@ public class StateGame extends State {
 	            resetGame();
 	        }
 	        else if (overGem((int)_mousePos.x, (int)_mousePos.y)) { // Si se puls� sobre una gema
-	            _selectSFX.play();
+	            if (Gdx.app.getType() != ApplicationType.WebGL) {
+	            	_selectSFX.play();
+	            }
 
 	            if (_state == State.Wait) { // Si no hay ninguna gema marcada
 	                _state = State.SelectedGem;
@@ -967,7 +986,9 @@ public class StateGame extends State {
 	}
 	
 	private Coord getCoord(int mX, int mY) {
-		return new Coord((mX - (int)gemsInitial.x) / 76, (mY - (int)gemsInitial.y) / 76);
+		_coord.x = (mX - (int)gemsInitial.x) / 76;
+		_coord.y = (mY - (int)gemsInitial.y) / 76;
+		return _coord;
 	}
 	
 	private void redrawScoreBoard() {
@@ -976,12 +997,12 @@ public class StateGame extends State {
 	
 	private void createFloatingScores() {
 	    // For each match in the group of matched squares
-	    int numMatches = _groupedSquares.size();
+	    int numMatches = _groupedSquares.size;
 	    
 	    for (int i = 0; i < numMatches; ++i) {
 	    	// Create new floating score
 	    	Match match = _groupedSquares.get(i);
-	    	int matchSize = match.size();
+	    	int matchSize = match.size;
 	    	_floatingScores.add(new FloatingScore(_parent,
 	    										  _fontScore,
 	    										  matchSize * 5 * _multiplier,
@@ -990,7 +1011,7 @@ public class StateGame extends State {
 	    	
 	    	// Create a particle effect for each matching square
 	    	for (int j = 0; j < matchSize; ++j) {
-	    		ParticleEffect newEffect = new ParticleEffect(_effect);
+	    		PooledEffect newEffect = _effectPool.obtain();
 	    		newEffect.setPosition(gemsInitial.x + match.get(j).x * 76 + 38, gemsInitial.y + match.get(j).y * 76 + 38);
 	    		newEffect.start();
 	    		_effects.add(newEffect);
@@ -1007,37 +1028,45 @@ public class StateGame extends State {
 	    if(Math.abs(_selectedSquareFirst.x - _selectedSquareSecond.x) 
 	       + Math.abs(_selectedSquareFirst.y - _selectedSquareSecond.y) == 1){ 
 
-	        Board temporal = new Board(_board);
-	        temporal.swap(_selectedSquareFirst.x, _selectedSquareFirst.y,
-	                      _selectedSquareSecond.x, _selectedSquareSecond.y);
+	        _board.swap(_selectedSquareFirst.x, _selectedSquareFirst.y,
+	                    _selectedSquareSecond.x, _selectedSquareSecond.y);
 
-	        _groupedSquares = temporal.check();
+	        _groupedSquares = _board.check();
 
 	        // If winning movement
-	        if (!_groupedSquares.isEmpty()) {
+	        if (_groupedSquares.size != 0) {
 	            _state = State.ChangingGems;
+	            
+	            _board.swap(_selectedSquareFirst.x, _selectedSquareFirst.y,
+	                    	_selectedSquareSecond.x, _selectedSquareSecond.y);
+	            
 	            return true;
 	        }
+	        
+	        _board.swap(_selectedSquareFirst.x, _selectedSquareFirst.y,
+                    	_selectedSquareSecond.x, _selectedSquareSecond.y);
 	    }
 
 	    return false;
 	}
 	
 	private void showHint() {
-		ArrayList<Coord> solutions = _board.solutions();
+		Array<Coord> solutions = _board.solutions();
 		_coordHint = solutions.get(0);
 		_showingHint = _animHintTotalTime;
 	}
 	
 	private void playMatchSound() {
-		if (_multiplier  == 1) {
-			_match1SFX.play();
-		}
-		else if (_multiplier == 2) {
-			_match2SFX.play();
-		}
-		else {
-			_match3SFX.play();
+		if (Gdx.app.getType() != ApplicationType.WebGL) {
+			if (_multiplier  == 1) {
+				_match1SFX.play();
+			}
+			else if (_multiplier == 2) {
+				_match2SFX.play();
+			}
+			else {
+				_match3SFX.play();
+			}
 		}
 	}
 	

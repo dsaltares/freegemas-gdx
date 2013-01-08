@@ -1,6 +1,11 @@
 package com.siondream.freegemas;
 
+import java.awt.Color;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
@@ -176,6 +181,7 @@ public class StateMenu extends State {
 		
 		// Set positions now that we now about sizes
 		
+		float width;
 		float maxWidth = 0;
 		int numOptions = _options.size();
 		

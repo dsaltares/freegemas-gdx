@@ -1,7 +1,7 @@
 package com.siondream.freegemas;
 
+import java.io.IOException;
 import java.io.StringWriter;
-import java.util.ArrayList;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -30,7 +30,7 @@ public class ScoreTable implements Input.TextInputListener {
 	private int _points;
 	
 	// List with names and points (stored as strings)
-	private ArrayList<Pair<String, String> > _scores;
+	private Array<Pair<String, String> > _scores;
 	
 	// Resources
 	private BitmapFont _fontTitle;
@@ -53,7 +53,7 @@ public class ScoreTable implements Input.TextInputListener {
 		_lang = LanguagesManager.getInstance();
 		
 		// Create scores
-		_scores = new ArrayList<Pair<String, String>>();
+		_scores = new Array<Pair<String, String>>();
 		
 		// Parse scores
 		parseScore();
@@ -73,7 +73,7 @@ public class ScoreTable implements Input.TextInputListener {
 		_scoreYGap = 60;
 		
 		// Launch text input if score is better than any of the already recorded or if there are less than 5
-		int numScores = _scores.size();
+		int numScores = _scores.size;
 		boolean newScore = numScores < 5;
 		
 		for (int i = 0; i < numScores && !newScore; ++i) {
@@ -100,7 +100,7 @@ public class ScoreTable implements Input.TextInputListener {
 			_fontTitle.draw(batch, _titleText, (int)_titlePos.x, (int)_titlePos.y);
 			
 			// Render table
-			int numScores = _scores.size();
+			int numScores = _scores.size;
 			
 			for (int i = 0; i < numScores; ++i) {
 				_fontText.draw(batch, _scores.get(i).getFirst(), (int)_firstScorePos.x, (int)_firstScorePos.y + i * _scoreYGap);
@@ -136,7 +136,7 @@ public class ScoreTable implements Input.TextInputListener {
 			
 			xml = xml.element("scores");
 			
-			int numScores = _scores.size();
+			int numScores = _scores.size;
 			for (int i = 0; i < numScores; ++i) {
 				xml = xml.element("score").attribute("name", _scores.get(i).getFirst()).attribute("points", _scores.get(i).getSecond()).pop();
 			}
@@ -148,7 +148,6 @@ public class ScoreTable implements Input.TextInputListener {
 			
 			
 			System.out.println(writer.toString());
-			xml.close();
 		}
 		catch (Exception e) {
 			
@@ -165,14 +164,14 @@ public class ScoreTable implements Input.TextInputListener {
 	public void input(String text) {
 		if (!text.equals("")) {
 			// Add new entry in order
-			int numScores = _scores.size();
+			int numScores = _scores.size;
 			boolean added = false;
 			for (int i = 0; i < numScores; ++i) {
 		        if (Integer.parseInt(_scores.get(i).getSecond()) < _points) {
 		        	if (text.length() > 15) {
 						text = text.substring(0, 15);
 					}
-		        	_scores.add(i, new Pair<String, String>(text, new String("" + _points)));
+		        	_scores.insert(i, new Pair<String, String>(text, new String("" + _points)));
 		        	added = true;
 		        	break;
 		        }
@@ -186,10 +185,10 @@ public class ScoreTable implements Input.TextInputListener {
 			}
 			
 			// Delete last entry if it exceeds MAX_ENTRIES
-			numScores = _scores.size();
+			numScores = _scores.size;
 			
 			if (numScores > MAX_ENTRIES) {
-				_scores.remove(numScores - 1);
+				_scores.removeIndex(numScores - 1);
 			}
 			
 			// Save scores

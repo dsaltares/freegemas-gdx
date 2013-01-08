@@ -1,12 +1,12 @@
 package com.siondream.freegemas;
 
 import java.util.HashMap;
-import javax.xml.parsers.*;
-
-import org.w3c.dom.*;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.XmlReader;
+import com.badlogic.gdx.utils.XmlReader.Element;
 
 public class LanguagesManager {
 	private static LanguagesManager _instance = null;
@@ -23,13 +23,8 @@ public class LanguagesManager {
 		_language = new HashMap<String, String>();
 		
 		// Try to load system language
-		PlatformResolver resolver = Freegemas.getPlatformResolver();
-		
-		if (resolver != null) {
-			_languageName = resolver.getDefaultLanguage();
-		}
-		
-		
+		// If it fails, fallback to default language
+		_languageName = "en_UK"; //java.util.Locale.getDefault().toString();
 		if (!loadLanguage(_languageName)) {
 			loadLanguage(DEFAULT_LANGUAGE);
 			_languageName = DEFAULT_LANGUAGE;
@@ -64,37 +59,29 @@ public class LanguagesManager {
 		return key;
 	}
 	
-	public String getString(String key, Object... args) {
-		return String.format(getString(key), args);
-	}
+//	public String getString(String key, Object... args) {
+//		return String.format(getString(key), args);
+//	}
 	
 	public boolean loadLanguage(String languageName) {
 		try {
-			DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-			DocumentBuilder db = dbf.newDocumentBuilder();
-			FileHandle fileHandle = Gdx.files.internal(LANGUAGES_FILE);
-			Document doc = db.parse(fileHandle.read());
+			XmlReader reader = new XmlReader();
+			Element root = reader.parse(Gdx.files.internal(LANGUAGES_FILE).read());
 			
-			Element root = doc.getDocumentElement();
+			Array<Element> languages = root.getChildrenByName("language");
 			
-			NodeList languages = root.getElementsByTagName("language");
-			int numLanguages = languages.getLength();
-			
-			for (int i = 0; i < numLanguages; ++i) {
-				Node language = languages.item(i);
+			for (int i = 0; i < languages.size; ++i) {
+				Element language = languages.get(i);
 				
-				if (language.getAttributes().getNamedItem("name").getTextContent().equals(languageName)) {
+				if (language.getAttribute("name").equals(languageName)) {
 					_language.clear();
-					Element languageElement = (Element)language;
-					NodeList strings = languageElement.getElementsByTagName("string");
-					int numStrings = strings.getLength();
+					Array<Element> strings = language.getChildrenByName("string");
 					
-					for (int j = 0; j < numStrings; ++j) {
-						NamedNodeMap attributes = strings.item(j).getAttributes();
-						String key = attributes.getNamedItem("key").getTextContent();
-						String value = attributes.getNamedItem("value").getTextContent();
-						System.out.println(value);
-						value = value.replace("<br />", "\n");
+					for (int j = 0; j < strings.size; ++j) {
+						Element string = strings.get(j);
+						String key = string.getAttribute("key");
+						String value = string.getAttribute("value");
+						value = value.replace("&lt;br /&gt;&lt;br /&gt;", "\n");
 						_language.put(key, value);
 					}
 					

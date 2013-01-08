@@ -14,13 +14,18 @@ public class FloatingScore {
 	private BitmapFont _font;
 	private String _text;
 	private Vector2 _pos;
+	private Vector2 _currentPos;
 	private float _time;
+	
+	private Color _backColor = Color.BLACK.cpy();
+	private Color _frontColor = Color.WHITE.cpy();
 	
 	public FloatingScore(Freegemas game, BitmapFont font, int score, float x, float y) {
 		_game = game;
 		_font = font;
 		_text = new String("" + score);
 		_pos = new Vector2(x, y);
+		_currentPos = Vector2.Zero.cpy();
 		_time = 0.0f;
 	}
 	
@@ -30,14 +35,18 @@ public class FloatingScore {
 		_time += Gdx.graphics.getDeltaTime();
 		
 		float p = 1.0f - _time/duration;
-		Vector2 currentPos = new Vector2(_pos.x - 12, _pos.y - (1.0f - p) * 20);
+		_currentPos.x = _pos.x - 12;
+		_currentPos.y = _pos.y - (1.0f - p) * 20;
 		Color oldFontColor = _font.getColor();
 		
-		_font.setColor(new Color(0.0f, 0.0f, 0.0f, p));
-		_font.draw(batch, _text, (int)currentPos.x - 2, (int)currentPos.y - 2);
-		_font.draw(batch, _text, (int)currentPos.x + 2, (int)currentPos.y + 2);
-		_font.setColor(new Color(1.0f, 1.0f, 1.0f, p));
-		_font.draw(batch, _text, (int)currentPos.x, (int)currentPos.y);
+		_backColor.a = p;
+		_frontColor.a = p;
+		
+		_font.setColor(_backColor);
+		_font.draw(batch, _text, (int)_currentPos.x - 2, (int)_currentPos.y - 2);
+		_font.draw(batch, _text, (int)_currentPos.x + 2, (int)_currentPos.y + 2);
+		_font.setColor(_frontColor);
+		_font.draw(batch, _text, (int)_currentPos.x, (int)_currentPos.y);
 		_font.setColor(oldFontColor);
 	}
 	

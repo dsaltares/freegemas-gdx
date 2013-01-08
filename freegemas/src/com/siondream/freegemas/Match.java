@@ -1,33 +1,30 @@
 package com.siondream.freegemas;
 
-import java.util.ArrayList;
+import com.badlogic.gdx.utils.Array;
 
-public class Match extends ArrayList<Coord> {
-	
-	private static final long serialVersionUID = 1L;
-
+public class Match extends Array<Coord> {
 	public Match() {
 		super();
 	}
 	
 	public boolean isMatched(Coord c) {
-		return contains(c);
+		return contains(c, false);
 	}
 	
 	public Coord getMidSquare() {
-		if (size() > 0)
+		if (size > 0)
 		{
-			return get(size() / 2);
+			return get(size / 2);
 		}
 		
 		return null;
 	}
 	
 	public String toString() {
-		String string = new String("Matches: ");
+		String string = "Matches: ";
 		
-		for (int i = 0; i < size(); ++i) {
-			string += new String("(" + get(i).x + ", " + get(i).y + ")"); 
+		for (int i = 0; i < size; ++i) {
+			string += "(" + get(i).x + ", " + get(i).y + ")"; 
 		}
 		
 		return string;

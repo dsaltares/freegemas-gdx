@@ -1,24 +1,33 @@
 package com.siondream.freegemas;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.math.MathUtils;
+import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Pool;
 
 public class Board {
-	
 	private Square[][] _squares;
+	
+	// Aux 
+	private MultipleMatch _matches = new MultipleMatch();
+	private Match[][] _columns = new Match[8][6];
+	private Match[][] _rows = new Match[8][6];
+	private Coord[] _matchCoords = new Coord[1000];
+	private Coord[] _solCoords = new Coord[1000];
+	private Array<Coord> _results = new Array<Coord>();
 	
 	public Board() {
 		_squares = new Square[8][8];
-	}
-	
-	public Board(Board other) {
-		_squares = new Square[8][8];
 		
-		for (int i = 0; i < 8; ++i) {
-			for (int j = 0; j < 8; ++j) {
-				_squares[i][j] = new Square(other._squares[i][j]);
+		for (int x = 0; x < 8; ++x) {
+			for (int y = 0; y < 6; ++y) {
+				_columns[x][y] = new Match();
+				_rows[x][y] = new Match();
 			}
+		}
+		
+		for (int x = 0; x < 1000; ++x) {
+			_matchCoords[x] = new Coord();
+			_solCoords[x] = new Coord();
 		}
 	}
 	
@@ -72,12 +81,12 @@ public class Board {
 				}
 			}
 			
-			if (!check().isEmpty()) {
+			if (check().size != 0) {
 				System.out.println("Generated board has matches, repeating...");
 				repeat = true;
 			}
 			
-			else if (solutions().isEmpty()) {
+			else if (solutions().size == 0) {
 				System.out.println("Generated board doesn't have solutions, repeating...");
 				repeat = true;
 			}
@@ -154,29 +163,37 @@ public class Board {
 	
 	public MultipleMatch check() {
 	    int k;
-
-	    MultipleMatch matches = new MultipleMatch();    
-
+    
+	    _matches.clear();
+	    int currCoord = 0;
+	    
 	    // First, we check each row (horizontal)
 	    for (int y = 0; y < 8; ++y) {
 
 	        for (int x = 0; x < 6; ++x) {
 
-	            Match currentRow = new Match();
-	            currentRow.add(new Coord(x, y));
+	            Match currentRow = _rows[y][x];
+	            currentRow.clear();
+	            _matchCoords[currCoord].x = x;
+	            _matchCoords[currCoord].y = y;
+	            currentRow.add(_matchCoords[currCoord]);
+	            ++currCoord;
 
 	            for (k = x + 1; k < 8; ++k) {
 	                if (_squares[x][y].equals(_squares[k][y]) &&
 	                   !_squares[x][y].equals(Square.Type.sqEmpty)) {
-	                    currentRow.add(new Coord(k, y));
+	                	_matchCoords[currCoord].x = k;
+	    	            _matchCoords[currCoord].y = y;
+	                    currentRow.add(_matchCoords[currCoord]);
+	                    ++currCoord;
 	                }
 	                else {
 	                    break;
 	                }
 	            }
 
-	            if (currentRow.size() > 2) {
-	                matches.add(currentRow);
+	            if (currentRow.size > 2) {
+	                _matches.add(currentRow);
 	            }
 
 	            x = k - 1;
@@ -186,89 +203,111 @@ public class Board {
 	    for (int x = 0; x < 8; ++x) {
 	        for (int y = 0; y < 6; ++y) {
 
-	            Match currentColumn = new Match();
-	            currentColumn.add(new Coord(x, y));
+	            Match currentColumn = _columns[x][y];
+	            currentColumn.clear();
+	            _matchCoords[currCoord].x = x;
+	            _matchCoords[currCoord].y = y;
+	            currentColumn.add(_matchCoords[currCoord]);
+	            ++currCoord;
 
 	            for (k = y + 1; k < 8; ++k) {
 	                if (_squares[x][y].equals(_squares[x][k]) &&
 	                	!_squares[x][y].equals(Square.Type.sqEmpty)) {
-	                    currentColumn.add(new Coord(x, k));
+	                	_matchCoords[currCoord].x = x;
+	    	            _matchCoords[currCoord].y = k;
+	                	currentColumn.add(_matchCoords[currCoord]);
+	                	++currCoord;
 	                }
 	                else {
 	                    break;
 	                }
 	            }
 
-	            if (currentColumn.size() > 2) {
-	                matches.add(currentColumn);
+	            if (currentColumn.size > 2) {
+	                _matches.add(currentColumn);
 	            }
 
 	            y = k - 1;
 	        }
 	    }
 
-	    return matches;
+	    return _matches;
 	}
 	
-	public ArrayList<Coord> solutions() {
-	    ArrayList<Coord> results = new ArrayList<Coord>();
-	    
-	    if(!check().isEmpty()){
-	        results.add(new Coord(-1, -1));
-	        return results;
+	public Array<Coord> solutions() {
+		_results.clear();
+		int currCoord = 0;
+		
+	    if(check().size != 0){
+	    	_solCoords[currCoord].x = -1;
+	    	_solCoords[currCoord].y = -1;
+	        _results.add(_solCoords[currCoord]);
+	        ++currCoord;
+	        return _results;
 	    }
 
 	    /* 
 	       Check all possible boards
 	       (49 * 4) + (32 * 2) although there are many duplicates
 	    */
-	    Board temp = new Board(this);
 	    for(int x = 0; x < 8; ++x){
 	        for(int y = 0; y < 8; ++y){
 	        
 	            // Swap with the one above and check
 	            if (y > 0) {
-	                temp.swap(x, y, x, y - 1);
-	                if (!temp.check().isEmpty()) {
-	                    results.add(new Coord(x, y));
+	                swap(x, y, x, y - 1);
+	                if (check().size != 0) {
+	                	_solCoords[currCoord].x = x;
+	        	    	_solCoords[currCoord].y = y;
+	                    _results.add(_solCoords[currCoord]);
+	                    ++currCoord;
 	                }
 	                
-	                temp.swap(x, y, x, y - 1);
+	                swap(x, y, x, y - 1);
 	            }
 
 	            // Swap with the one below and check
 	            if (y < 7) {
-	                temp.swap(x, y, x, y + 1);
-	                if (!temp.check().isEmpty()) {
-	                    results.add(new Coord(x, y));
+	                swap(x, y, x, y + 1);
+	                if (check().size != 0) {
+	                	_solCoords[currCoord].x = x;
+	        	    	_solCoords[currCoord].y = y;
+	                    _results.add(_solCoords[currCoord]);
+	                    ++currCoord;
 	                }
 	                
-	                temp.swap(x, y, x, y + 1);
+	                swap(x, y, x, y + 1);
 	            }
 
 	            // Swap with the one on the left and check
 	            if (x > 0) {
-	                temp.swap(x, y, x - 1, y);
-	                if (!temp.check().isEmpty()) {
-	                    results.add(new Coord(x, y));
+	                swap(x, y, x - 1, y);
+	                if (check().size != 0) {
+	                	_solCoords[currCoord].x = x;
+	        	    	_solCoords[currCoord].y = y;
+	                    _results.add(_solCoords[currCoord]);
+	                    ++currCoord;
 	                }
 	                
-	                temp.swap(x, y, x - 1, y);
+	                swap(x, y, x - 1, y);
 	            }
 
 	            // Swap with the one on the right and check
 	            if (x < 7) {
-	                temp.swap(x, y, x + 1, y);
-	                if (!temp.check().isEmpty()) {
-	                    results.add(new Coord(x, y));
+	                swap(x, y, x + 1, y);
+	                if (check().size != 0) {
+	                	_solCoords[currCoord].x = x;
+	        	    	_solCoords[currCoord].y = y;
+	                    _results.add(_solCoords[currCoord]);
+	                    ++currCoord;
 	                }
 	                
-	                temp.swap(x, y, x + 1, y);
+	                swap(x, y, x + 1, y);
 	            }
 	        }
 	    }
 
-	    return results;
+	    return _results;
 	}
 	
 	public void endAnimation() {
@@ -282,7 +321,7 @@ public class Board {
 	}
 	
 	public String toString() {
-		String string = new String("");
+		String string = "";
 		
 		for (int i = 0; i < 8; ++i) {
 			for (int j = 0; j < 8; ++j) {

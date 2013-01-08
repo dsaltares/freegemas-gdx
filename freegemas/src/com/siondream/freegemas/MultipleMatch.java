@@ -1,8 +1,8 @@
 package com.siondream.freegemas;
 
-import java.util.ArrayList;
+import com.badlogic.gdx.utils.Array;
 
-public class MultipleMatch extends ArrayList<Match> {
+public class MultipleMatch extends Array<Match> {
 	
 	private static final long serialVersionUID = 1L;
 
@@ -11,9 +11,7 @@ public class MultipleMatch extends ArrayList<Match> {
 	}
 	
 	public boolean isMatched(Coord c) {
-		int numMatches = size();
-		
-		for (int i = 0; i < numMatches; ++i) {
+		for (int i = 0; i < size; ++i) {
 			if (get(i).isMatched(c)) {
 				return true;
 			}

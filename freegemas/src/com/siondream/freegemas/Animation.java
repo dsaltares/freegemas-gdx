@@ -1,7 +1,5 @@
 package com.siondream.freegemas;
 
-import java.util.HashMap;
-
 public class Animation {
 	/// Kinds of animation
     public enum Type {EaseInQuad,
