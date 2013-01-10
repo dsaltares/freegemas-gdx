@@ -4,3 +4,9 @@
 *.jar
 *.war
 *.ear
+*/bin/*
+gen/*
+gwt-unitCache/*
+war/assets/*
+com.siondream.freegemas.GwtDefinition/*
+WEB-INF/*
