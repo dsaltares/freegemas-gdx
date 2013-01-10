@@ -1,7 +1,5 @@
 package com.siondream.freegemas;
 
-
-import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.assets.AssetManager;
@@ -209,14 +207,12 @@ public class StateGame extends State {
 		assetManager.load("data/iconMusic.png", Texture.class);
 		
 		// Load SFX and music
-		if (Gdx.app.getType() != ApplicationType.WebGL) {
-			assetManager.load("data/match1.ogg", Sound.class);
-			assetManager.load("data/match2.ogg", Sound.class);
-			assetManager.load("data/match3.ogg", Sound.class);
-			assetManager.load("data/select.ogg", Sound.class);
-			assetManager.load("data/fall.ogg", Sound.class);
-			assetManager.load("data/music1.ogg", Music.class);
-		}
+		assetManager.load("data/match1.ogg", Sound.class);
+		assetManager.load("data/match2.ogg", Sound.class);
+		assetManager.load("data/match3.ogg", Sound.class);
+		assetManager.load("data/select.ogg", Sound.class);
+		assetManager.load("data/fall.ogg", Sound.class);
+		assetManager.load("data/music1.ogg", Music.class);
 		
 		resetGame();
 	}
@@ -364,19 +360,17 @@ public class StateGame extends State {
 		_musicButton.setFont(buttonFont);
 		
 		// Load SFX and music
-		if (Gdx.app.getType() != ApplicationType.WebGL) {
-			_match1SFX = assetManager.get("data/match1.ogg", Sound.class);
-			_match2SFX = assetManager.get("data/match2.ogg", Sound.class);
-			_match3SFX = assetManager.get("data/match3.ogg", Sound.class);
-			_selectSFX = assetManager.get("data/select.ogg", Sound.class);
-			_fallSFX = assetManager.get("data/fall.ogg", Sound.class);
-			_song = assetManager.get("data/music1.ogg", Music.class);
-			
-			// Play music if it wasn't playing
-			if (!_song.isPlaying()) {
-				_song.setLooping(true);
-		        _song.play();
-			}
+		_match1SFX = assetManager.get("data/match1.ogg", Sound.class);
+		_match2SFX = assetManager.get("data/match2.ogg", Sound.class);
+		_match3SFX = assetManager.get("data/match3.ogg", Sound.class);
+		_selectSFX = assetManager.get("data/select.ogg", Sound.class);
+		_fallSFX = assetManager.get("data/fall.ogg", Sound.class);
+		_song = assetManager.get("data/music1.ogg", Music.class);
+		
+		// Play music if it wasn't playing
+		if (!_song.isPlaying()) {
+			_song.setLooping(true);
+	        _song.play();
 		}
 		
 		Gdx.input.setInputProcessor(this);
@@ -522,9 +516,7 @@ public class StateGame extends State {
 			// When animation ends
 			if ((_animTime += deltaT) >= _animTotalTime) {
 				// Play the fall sound fx
-				if (Gdx.app.getType() != ApplicationType.WebGL) {
-					_fallSFX.play();
-				}
+				_fallSFX.play();
 				
 				// Switch to the next state (waiting)
 				_state = State.Wait;
@@ -708,6 +700,8 @@ public class StateGame extends State {
 	                case sqBlue:
 	                    img = _imgBlue;
 	                    break;
+					default:
+						break;
 
 	                } // switch end
 	                
@@ -881,7 +875,7 @@ public class StateGame extends State {
 	        else if (_hintButton.isClicked((int)_mousePos.x, (int)_mousePos.y)) {
 	            showHint();
 	        }
-	        else if (Gdx.app.getType() != ApplicationType.WebGL && _musicButton.isClicked((int)_mousePos.x, (int)_mousePos.y)) {
+	        else if (_musicButton.isClicked((int)_mousePos.x, (int)_mousePos.y)) {
 	            if (_song.isPlaying()) {
 	                _musicButton.setText(_lang.getString("Turn on music"));
 	                _song.stop();
@@ -898,9 +892,7 @@ public class StateGame extends State {
 	            resetGame();
 	        }
 	        else if (overGem((int)_mousePos.x, (int)_mousePos.y)) { // Si se puls� sobre una gema
-	            if (Gdx.app.getType() != ApplicationType.WebGL) {
-	            	_selectSFX.play();
-	            }
+	            _selectSFX.play();
 
 	            if (_state == State.Wait) { // Si no hay ninguna gema marcada
 	                _state = State.SelectedGem;
@@ -1057,16 +1049,14 @@ public class StateGame extends State {
 	}
 	
 	private void playMatchSound() {
-		if (Gdx.app.getType() != ApplicationType.WebGL) {
-			if (_multiplier  == 1) {
-				_match1SFX.play();
-			}
-			else if (_multiplier == 2) {
-				_match2SFX.play();
-			}
-			else {
-				_match3SFX.play();
-			}
+		if (_multiplier  == 1) {
+			_match1SFX.play();
+		}
+		else if (_multiplier == 2) {
+			_match2SFX.play();
+		}
+		else {
+			_match3SFX.play();
 		}
 	}
 	
