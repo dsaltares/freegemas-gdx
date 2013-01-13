@@ -47,4 +47,28 @@
 		<!--  How to play  -->
 		<string key="help_text" value="El objetivo del juego es intercambiar una gema con otra adyacente para formar una cadena vertical u horizontal de tres o más gemas.&lt;br /&gt;&lt;br /&gt;Pulsa sobre la primera gema y luego sobre la segunda si quieres intercambiarlas. Si el movimiento es correcto, se intercambiarán y desaparecerán.&lt;br /&gt;&lt;br /&gt;Se consiguen bonificaciones cuando se encadenan más de tres gemas iguales. A veces se producen reacciones en cadenas llamadas cascadas las cuales reciben puntos extra." />
 	</language>
+	
+		<!-- German -->
+	<language name="de_DE" >
+		<string key="Loading..." value="Laden..." />
+
+		<!--  Game  -->
+		<string key="Points" value="Punkte" />
+		<string key="Time left" value="Restzeit" />
+		<string key="Hint" value="Tipp" />
+		<string key="Reset" value="Neustart" />
+		<string key="Exit" value="Beenden" />
+		<string key="Turn off music" value="Musik aus" />
+		<string key="Turn on music" value="Musik an" />
+		<string key="Best scores" value="Top Punkte" />
+		<string key="You're top 5! Enter your name" value="Du bist unter den Top 5! Gib Deinen Namen ein" />
+
+		<!--  Menu  -->
+		<string key="Timetrial mode" value="Spiel gegen die Zeit" />
+		<string key="How to play" value="Anleitung" />
+		<string key="Exit" value="Beenden" />
+
+		<!--  How to play  -->
+		<string key="help_text" value="Das Ziel des Spiels ist es, ein Juwel mit einem benachbarten Juwel zu tauschen, um eine horizontale oder vertikale Kette von drei oder mehr Juwelen zu bilden.&lt;br /&gt;&lt;br /&gt;Klicke das erste Juwel an und dann das Juwel, mit dem Du das erste Juwel tauschen möchtest. Wenn der Zug erlaubt ist, werden die beiden Juwelen getauscht und die aneinander gereihten Juwelen verschwinden.&lt;br /&gt;&lt;br /&gt;Wenn mehr als drei gleiche Juwelen aneinander gereiht werden, gibt es Bonus Punkte. Manchmal entstehen Kettenreaktionen - so genannte Kaskaden, wenn fallende Juwelen wieder Ketten bilden. Kaskaden werden mit Bonus Punkten belohnt." />
+	</language>
 </languages>
