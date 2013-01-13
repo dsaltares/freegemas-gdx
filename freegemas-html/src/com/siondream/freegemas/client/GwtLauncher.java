@@ -6,6 +6,12 @@ import com.badlogic.gdx.backends.gwt.GwtApplication;
 import com.badlogic.gdx.backends.gwt.GwtApplicationConfiguration;
 
 public class GwtLauncher extends GwtApplication {
+	
+	public GwtLauncher() {
+		super();
+		Freegemas.setPlatformResolver(new WebGLResolver());
+	}
+	
 	@Override
 	public GwtApplicationConfiguration getConfig () {
 		GwtApplicationConfiguration cfg = new GwtApplicationConfiguration(960, 540);

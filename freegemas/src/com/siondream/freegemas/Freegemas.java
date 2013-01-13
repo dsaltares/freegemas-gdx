@@ -45,6 +45,8 @@ public class Freegemas implements ApplicationListener {
 	
 	private Logger _logger = null;
 	
+	private static PlatformResolver _resolver = null;
+	
 	@Override
 	public void create() {
 		// Logger
@@ -200,6 +202,14 @@ public class Freegemas implements ApplicationListener {
 	
 	public OrthographicCamera getCamera() {
 		return _camera;
+	}
+	
+	public static PlatformResolver getPlatformResolver() {
+		return _resolver;
+	}
+	
+	public static void setPlatformResolver(PlatformResolver resolver) {
+		_resolver = resolver;
 	}
 	
 	private void performPendingStateChange() {

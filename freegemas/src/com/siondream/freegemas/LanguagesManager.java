@@ -24,7 +24,13 @@ public class LanguagesManager {
 		
 		// Try to load system language
 		// If it fails, fallback to default language
-		_languageName = "en_UK"; //java.util.Locale.getDefault().toString();
+		
+		PlatformResolver resolver = Freegemas.getPlatformResolver();
+		
+		if (resolver != null) {
+			_languageName = resolver.getDefaultLanguage();
+		}
+		
 		if (!loadLanguage(_languageName)) {
 			loadLanguage(DEFAULT_LANGUAGE);
 			_languageName = DEFAULT_LANGUAGE;
