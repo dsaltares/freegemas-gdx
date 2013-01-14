@@ -1,6 +1,8 @@
 package com.siondream.freegemas;
 
 import java.util.HashMap;
+
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.ApplicationListener;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.assets.AssetManager;
@@ -126,7 +128,7 @@ public class Freegemas implements ApplicationListener {
 		}
 		
 		// Render mouse on top
-		if (platform != Platform.Android) {
+		if (Gdx.app.getType() != ApplicationType.Android) {
 			_mousePos.x = Gdx.input.getX();
 			_mousePos.y = Gdx.input.getY();
 			_camera.unproject(_mousePos);

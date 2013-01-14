@@ -34,18 +34,18 @@
 		<string key="Hint" value="Pista" />
 		<string key="Reset" value="Reiniciar" />
 		<string key="Exit" value="Salir" />
-		<string key="Turn off music" value="MÃºsica off" />
-		<string key="Turn on music" value="MÃºsica on" />
+		<string key="Turn off music" value="Música off" />
+		<string key="Turn on music" value="Música on" />
 		<string key="Best scores" value="Mejores puntuaciones" />
-		<string key="You're top 5! Enter your name" value="EstÃ¡s en el top 5! Escribe tu nombre" />
+		<string key="You're top 5! Enter your name" value="¡Estás en el top 5! Escribe tu nombre" />
 		
 		<!--  Menu  -->
 		<string key="Timetrial mode" value="Contrarreloj" />
-		<string key="How to play" value="Â¿CÃ³mo jugar?" />
+		<string key="How to play" value="¿Cómo jugar?" />
 		<string key="Exit" value="Salir" />
 		
 		<!--  How to play  -->
-		<string key="help_text" value="El objetivo del juego es intercambiar una gema con otra adyacente para formar una cadena vertical u horizontal de tres o mÃ¡s gemas.&lt;br /&gt;&lt;br /&gt;Pulsa sobre la primera gema y luego sobre la segunda si quieres intercambiarlas. Si el movimiento es correcto, se intercambiarÃ¡n y desaparecerÃ¡n.&lt;br /&gt;&lt;br /&gt;Se consiguen bonificaciones cuando se encadenan mÃ¡s de tres gemas iguales. A veces se producen reacciones en cadenas llamadas cascadas las cuales reciben puntos extra." />
+		<string key="help_text" value="El objetivo del juego es intercambiar una gema con otra adyacente para formar una cadena vertical u horizontal de tres o más gemas.&lt;br /&gt;&lt;br /&gt;Pulsa sobre la primera gema y luego sobre la segunda si quieres intercambiarlas. Si el movimiento es correcto, se intercambiarán y desaparecerán.&lt;br /&gt;&lt;br /&gt;Se consiguen bonificaciones cuando se encadenan más de tres gemas iguales. A veces se producen reacciones en cadenas llamadas cascadas las cuales reciben puntos extra." />
 	</language>
 	
 		<!-- German -->
@@ -69,6 +69,6 @@
 		<string key="Exit" value="Beenden" />
 
 		<!--  How to play  -->
-		<string key="help_text" value="Das Ziel des Spiels ist es, ein Juwel mit einem benachbarten Juwel zu tauschen, um eine horizontale oder vertikale Kette von drei oder mehr Juwelen zu bilden.&lt;br /&gt;&lt;br /&gt;Klicke das erste Juwel an und dann das Juwel, mit dem Du das erste Juwel tauschen mÃ¶chtest. Wenn der Zug erlaubt ist, werden die beiden Juwelen getauscht und die aneinander gereihten Juwelen verschwinden.&lt;br /&gt;&lt;br /&gt;Wenn mehr als drei gleiche Juwelen aneinander gereiht werden, gibt es Bonus Punkte. Manchmal entstehen Kettenreaktionen - so genannte Kaskaden, wenn fallende Juwelen wieder Ketten bilden. Kaskaden werden mit Bonus Punkten belohnt." />
+		<string key="help_text" value="Das Ziel des Spiels ist es, ein Juwel mit einem benachbarten Juwel zu tauschen, um eine horizontale oder vertikale Kette von drei oder mehr Juwelen zu bilden.&lt;br /&gt;&lt;br /&gt;Klicke das erste Juwel an und dann das Juwel, mit dem Du das erste Juwel tauschen möchtest. Wenn der Zug erlaubt ist, werden die beiden Juwelen getauscht und die aneinander gereihten Juwelen verschwinden.&lt;br /&gt;&lt;br /&gt;Wenn mehr als drei gleiche Juwelen aneinander gereiht werden, gibt es Bonus Punkte. Manchmal entstehen Kettenreaktionen - so genannte Kaskaden, wenn fallende Juwelen wieder Ketten bilden. Kaskaden werden mit Bonus Punkten belohnt." />
 	</language>
 </languages>

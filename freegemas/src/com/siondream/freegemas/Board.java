@@ -2,7 +2,6 @@ package com.siondream.freegemas;
 
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Pool;
 
 public class Board {
 	private Square[][] _squares;

@@ -3,7 +3,6 @@ package com.siondream.freegemas;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
 import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Color;
@@ -133,13 +132,7 @@ public class StateGame extends State {
 		_state = State.Loading;
 		
 		// Load and sync loading banner
-		BitmapFontLoader.BitmapFontParameter fontParameters = new BitmapFontLoader.BitmapFontParameter();
-		fontParameters.flip = true;
-		AssetManager assetManager = _parent.getAssetManager();
-		assetManager.load("data/loadingFont.fnt", BitmapFont.class, fontParameters);
-		assetManager.finishLoading();
-		_fontLoading = assetManager.get("data/loadingFont.fnt", BitmapFont.class);
-
+		_fontLoading = Freegemas.getPlatformResolver().loadFont("data/loadingFont.fnt", "data/normal.ttf", 70);
 		
 		// Create buttons
 		_hintButton = new Button(_parent, 180, 345, _lang.getString("Hint"));
@@ -179,13 +172,10 @@ public class StateGame extends State {
 		AssetManager assetManager = _parent.getAssetManager();
 		
 		// Load fonts
-		BitmapFontLoader.BitmapFontParameter fontParameters = new BitmapFontLoader.BitmapFontParameter();
-		fontParameters.flip = true;
 		
-		assetManager.load("data/timeFont.fnt", BitmapFont.class, fontParameters);
-		assetManager.load("data/scoreFont.fnt", BitmapFont.class, fontParameters);
-		assetManager.load("data/normalFont.fnt", BitmapFont.class, fontParameters);
-		assetManager.load("data/menuFont.fnt", BitmapFont.class, fontParameters);
+		_fontTime = Freegemas.getPlatformResolver().loadFont("data/timeFont.fnt", "data/lcd.ttf", 100);
+		_fontScore = Freegemas.getPlatformResolver().loadFont("data/scoreFont.fnt", "data/lcd.ttf", 70);
+		_fontText = Freegemas.getPlatformResolver().loadFont("data/normalFont.fnt", "data/normal.ttf", 45);
 		
 		// Load textures
 		assetManager.load("data/scoreBackground.png", Texture.class);
@@ -258,10 +248,6 @@ public class StateGame extends State {
 		
 		// Unload assets
 		AssetManager assetManager = _parent.getAssetManager();
-		assetManager.unload("data/timeFont.fnt");
-		assetManager.unload("data/scoreFont.fnt");
-		assetManager.unload("data/normalFont.fnt");
-		assetManager.unload("data/menuFont.fnt");
 		assetManager.unload("data/scoreBackground.png");
 		assetManager.unload("data/buttonBackground.png");
 		assetManager.unload("data/buttonBackgroundPressed.png");
@@ -292,11 +278,6 @@ public class StateGame extends State {
 		super.assignResources();
 		
 		AssetManager assetManager = _parent.getAssetManager();
-		
-		// Load fonts
-		_fontTime = assetManager.get("data/timeFont.fnt", BitmapFont.class);
-		_fontScore = assetManager.get("data/scoreFont.fnt", BitmapFont.class);
-		_fontText = assetManager.get("data/normalFont.fnt", BitmapFont.class);
 		
 		// Load textures
 		_imgScoreBackground = new TextureRegion(assetManager.get("data/scoreBackground.png", Texture.class));
@@ -337,8 +318,6 @@ public class StateGame extends State {
 		iconExit.flip(false, true);
 		iconMusic.flip(false, true);
 		
-		BitmapFont buttonFont = assetManager.get("data/normalFont.fnt", BitmapFont.class);
-		
 		_hintButton.setIcon(iconHint);
 		_resetButton.setIcon(iconRestart);
 		_exitButton.setIcon(iconExit);
@@ -354,10 +333,10 @@ public class StateGame extends State {
 		_exitButton.setBackgroundClicked(buttonBackgroundClicked);
 		_musicButton.setBackgroundClicked(buttonBackgroundClicked);
 		
-		_hintButton.setFont(buttonFont);
-		_resetButton.setFont(buttonFont);
-		_exitButton.setFont(buttonFont);
-		_musicButton.setFont(buttonFont);
+		_hintButton.setFont(_fontText);
+		_resetButton.setFont(_fontText);
+		_exitButton.setFont(_fontText);
+		_musicButton.setFont(_fontText);
 		
 		// Load SFX and music
 		_match1SFX = assetManager.get("data/match1.ogg", Sound.class);

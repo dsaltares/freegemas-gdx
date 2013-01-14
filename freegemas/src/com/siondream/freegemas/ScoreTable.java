@@ -1,11 +1,9 @@
 package com.siondream.freegemas;
 
-import java.io.IOException;
 import java.io.StringWriter;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -59,9 +57,8 @@ public class ScoreTable implements Input.TextInputListener {
 		parseScore();
 		
 		// Load resources
-		AssetManager assetManager = _game.getAssetManager();
-		_fontTitle = assetManager.get("data/menuFont.fnt", BitmapFont.class);
-		_fontText = assetManager.get("data/normalFont.fnt", BitmapFont.class);
+		_fontTitle = Freegemas.getPlatformResolver().loadFont("data/menuFont.fnt", "data/menu.ttf", 60);
+		_fontText = Freegemas.getPlatformResolver().loadFont("data/normalFont.fnt", "data/normal.ttf", 60);
 		
 		// Load strings
 		_titleText = _lang.getString("Best scores");

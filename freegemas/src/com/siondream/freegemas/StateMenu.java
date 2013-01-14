@@ -1,25 +1,19 @@
 package com.siondream.freegemas;
 
-import java.awt.Color;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.Application.ApplicationType;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
-//import com.badlogic.gdx.graphics.g2d.freetype.FreeTypeFontGenerator;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
+import com.badlogic.gdx.utils.Array;
 
 public class StateMenu extends State {
 
@@ -46,7 +40,7 @@ public class StateMenu extends State {
 	
 	// Options
 	private int _selectedOption;
-	private ArrayList<Pair<String, String>> _options;
+	private Array<Pair<String, String>> _options;
 	
 	// Gems animation
 	GemsAnimation _gems;
@@ -83,22 +77,17 @@ public class StateMenu extends State {
 		_fontMenu = null;
 		
 		// Load font resource
-		BitmapFontLoader.BitmapFontParameter fontParameters = new BitmapFontLoader.BitmapFontParameter();
-		fontParameters.flip = true;
-		AssetManager assetManager = _parent.getAssetManager();
-		assetManager.load("data/loadingFont.fnt", BitmapFont.class, fontParameters);
-		assetManager.finishLoading();
-		_fontLoading = assetManager.get("data/loadingFont.fnt", BitmapFont.class);
-//		FreeTypeFontGenerator generator = new FreeTypeFontGenerator(Gdx.files.internal("data/normal.ttf"));
-//		_fontLoading = generator.generateFont(150, FreeTypeFontGenerator.DEFAULT_CHARS, true);
-//		generator.dispose();
+		_fontLoading = Freegemas.getPlatformResolver().loadFont("data/loadingFont.fnt", "data/normal.ttf", 70);
 		
 		// Menu options
 		_selectedOption = 0;
-		_options = new ArrayList<Pair<String, String>>();
+		_options = new Array<Pair<String, String>>();
 		_options.add(new Pair(_lang.getString("Timetrial mode"), "StateGame"));
 		_options.add(new Pair(_lang.getString("How to play"), "StateHowto"));
-		_options.add(new Pair(_lang.getString("Exit"), "StateQuit"));
+		
+		if (Gdx.app.getType() != ApplicationType.WebGL) {
+			_options.add(new Pair(_lang.getString("Exit"), "StateQuit"));
+		}
 		
 		// Mouse pos
 		_mousePos = new Vector3();
@@ -129,9 +118,7 @@ public class StateMenu extends State {
 		
 		
 		// Load fonts
-		BitmapFontLoader.BitmapFontParameter fontParameters = new BitmapFontLoader.BitmapFontParameter();
-		fontParameters.flip = true;
-		assetManager.load("data/menuFont.fnt", BitmapFont.class, fontParameters);
+		_fontMenu = Freegemas.getPlatformResolver().loadFont("data/menuFont.fnt", "data/menu.ttf", 60);
 		
 		// Sound
 		assetManager.load("data/select.ogg", Sound.class);
@@ -151,7 +138,6 @@ public class StateMenu extends State {
 		assetManager.unload("data/mainMenuBackground.png");
 		assetManager.unload("data/mainMenuLogo.png");
 		assetManager.unload("data/menuHighlight.png");
-		assetManager.unload("data/menuFont.fnt");
 		assetManager.unload("data/gemWhite.png");
 		assetManager.unload("data/gemRed.png");
 		assetManager.unload("data/gemPurple.png");
@@ -171,7 +157,6 @@ public class StateMenu extends State {
 		_imgBackground = new TextureRegion(assetManager.get("data/mainMenuBackground.png", Texture.class));
 		_imgLogo = new TextureRegion(assetManager.get("data/mainMenuLogo.png", Texture.class));
 		_imgHighlight = new TextureRegion(assetManager.get("data/menuHighlight.png", Texture.class));
-		_fontMenu = assetManager.get("data/menuFont.fnt", BitmapFont.class);
 		
 		_imgBackground.flip(false, true);
 		_imgLogo.flip(false, true);
@@ -181,9 +166,8 @@ public class StateMenu extends State {
 		
 		// Set positions now that we now about sizes
 		
-		float width;
 		float maxWidth = 0;
-		int numOptions = _options.size();
+		int numOptions = _options.size;
 		
 		for (int i = 0; i < numOptions; ++i) {
 			TextBounds bounds = _fontMenu.getBounds(_options.get(i).getFirst());
@@ -195,7 +179,7 @@ public class StateMenu extends State {
 		
 		_menuStart = new Vector2((Freegemas.VIRTUAL_WIDTH - maxWidth) / 2, 390);
 		_menuGap = 100;
-		_menuEnd = new Vector2(_menuStart.x + maxWidth, 350 + _options.size() * _menuGap);
+		_menuEnd = new Vector2(_menuStart.x + maxWidth, 350 + _options.size * _menuGap);
 		
 		_gems = new GemsAnimation(_parent);
 		
@@ -248,7 +232,7 @@ public class StateMenu extends State {
 	    batch.draw(_imgLogo, 0, 0);
 	    batch.setColor(1.0f, 1.0f, 1.0f, 1.0f);
 		
-	    int numOptions = _options.size();
+	    int numOptions = _options.size;
 		
 		for (int i = 0; i < numOptions; ++i) {
 			TextBounds bounds = _fontMenu.getBounds(_options.get(i).getFirst());
@@ -276,6 +260,10 @@ public class StateMenu extends State {
 			_selectSFX.play();
 			
 			int currentOption = getOption();
+			
+			if (currentOption > 1 && Gdx.app.getType() == ApplicationType.WebGL) {
+				currentOption = 0;
+			}
 			
 			if (_readyToChange && currentOption == _selectedOption) {
 				_parent.changeState(_options.get(_selectedOption).getSecond());

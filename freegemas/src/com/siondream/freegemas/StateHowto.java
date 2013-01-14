@@ -1,11 +1,8 @@
 package com.siondream.freegemas;
 
-import java.util.ArrayList;
-
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input.Keys;
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.BitmapFontLoader;
 import com.badlogic.gdx.audio.Sound;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.BitmapFont;
@@ -13,7 +10,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
 import com.badlogic.gdx.graphics.g2d.BitmapFont.TextBounds;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.math.Vector3;
 
 public class StateHowto extends State {
 
@@ -59,12 +55,7 @@ public class StateHowto extends State {
 		_fontText = null;
 		
 		// Load font resource
-		AssetManager assetManager = _parent.getAssetManager();
-		BitmapFontLoader.BitmapFontParameter fontParameters = new BitmapFontLoader.BitmapFontParameter();
-		fontParameters.flip = true;
-		assetManager.load("data/loadingFont.fnt", BitmapFont.class, fontParameters);
-		assetManager.finishLoading();
-		_fontLoading = assetManager.get("data/loadingFont.fnt", BitmapFont.class);
+		_fontLoading = Freegemas.getPlatformResolver().loadFont("data/loadingFont.fnt", "data/normal.ttf", 70);
 		
 		// Load strings
 		_loadingText = _lang.getString("Loading...");
@@ -87,10 +78,8 @@ public class StateHowto extends State {
 		assetManager.load("data/howtoScreen.png", Texture.class);
 		
 		// Load fonts
-		BitmapFontLoader.BitmapFontParameter fontParameters = new BitmapFontLoader.BitmapFontParameter();
-		fontParameters.flip = true;
-		assetManager.load("data/menuFont.fnt", BitmapFont.class, fontParameters);
-		assetManager.load("data/helpFont.fnt", BitmapFont.class, fontParameters);
+		_fontTitle = Freegemas.getPlatformResolver().loadFont("data/menuFont.fnt", "data/menu.ttf", 60);
+		_fontText = Freegemas.getPlatformResolver().loadFont("data/helpFont.fnt", "data/normal.ttf", 37);
 		assetManager.load("data/select.ogg", Sound.class);
 	}
 	
@@ -105,8 +94,6 @@ public class StateHowto extends State {
 		// Unload resources
 		AssetManager assetManager = _parent.getAssetManager();
 		assetManager.unload("data/howtoScreen.png");
-		assetManager.unload("data/helpFont.fnt");
-		assetManager.unload("data/menuFont.fnt");
 		assetManager.unload("data/select.ogg");
 	}
 	
@@ -115,8 +102,6 @@ public class StateHowto extends State {
 		// Retrieve resources
 		AssetManager assetManager = _parent.getAssetManager();
 		_imgBackground = new TextureRegion(assetManager.get("data/howtoScreen.png", Texture.class));
-		_fontTitle = assetManager.get("data/menuFont.fnt", BitmapFont.class);
-		_fontText = assetManager.get("data/helpFont.fnt", BitmapFont.class);
 		_selectSFX = assetManager.get("data/select.ogg", Sound.class);
 		
 		_imgBackground.flip(false, true);
