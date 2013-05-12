@@ -9,6 +9,7 @@ public class GemsAnimation {
 	
 	private Freegemas _game;
 	private TextureRegion[] _imgGems;
+	
 	private int[] _posX;
 	private int _posY;
 	
