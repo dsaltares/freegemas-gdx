@@ -71,7 +71,7 @@ public class LanguagesManager {
 	public boolean loadLanguage(String languageName) {
 		try {
 			XmlReader reader = new XmlReader();
-			Element root = reader.parse(Gdx.files.internal(LANGUAGES_FILE).read());
+			Element root = reader.parse(Gdx.files.internal(LANGUAGES_FILE).reader("UTF-8"));
 			
 			Array<Element> languages = root.getChildrenByName("language");
 			
