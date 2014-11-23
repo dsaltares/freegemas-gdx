@@ -34,94 +34,94 @@ public class StateGame extends State {
 		ShowingScoreTable
 	};
 	
-	private static final Vector2 gemsInitial = new Vector2(572, 68);
+	protected static final Vector2 gemsInitial = new Vector2(572, 68);
 	
 	// Current game state
-	private State _state;
+	protected State _state;
 	
 	// Selected squares
-	private Coord _selectedSquareFirst;
-	private Coord _selectedSquareSecond;
+	protected Coord _selectedSquareFirst;
+	protected Coord _selectedSquareSecond;
 	
 	// Hints
-	private double _showingHint;
-	private double _animHintTotalTime;
+	protected double _showingHint;
+	protected double _animHintTotalTime;
 	private Coord _coordHint;
 	
 	// Game board
-	private Board _board;
+	protected Board _board;
 	
 	// Animations
-	private double _animTime;
-	private double _animTotalTime;
-	private double _animTotalInitTime;
+	protected double _animTime;
+	protected double _animTotalTime;
+	protected double _animTotalInitTime;
 	
 	// Points and gems matches
-	private MultipleMatch _groupedSquares;
-	private int _points;
-	private int _multiplier = 0;
-	private String _txtTime;
+	protected MultipleMatch _groupedSquares;
+	protected int _points;
+	protected int _multiplier = 0;
+	protected String _txtTime;
 	
 	// Game elements textures
-	private TextureRegion _imgBoard;
-	private TextureRegion _imgWhite;
-	private TextureRegion _imgRed;
-	private TextureRegion _imgPurple;
-	private TextureRegion _imgOrange;
-	private TextureRegion _imgGreen;
-	private TextureRegion _imgYellow;
-	private TextureRegion _imgBlue;
-	private TextureRegion _imgSelector;
+	protected TextureRegion _imgBoard;
+	protected TextureRegion _imgWhite;
+	protected TextureRegion _imgRed;
+	protected TextureRegion _imgPurple;
+	protected TextureRegion _imgOrange;
+	protected TextureRegion _imgGreen;
+	protected TextureRegion _imgYellow;
+	protected TextureRegion _imgBlue;
+	protected TextureRegion _imgSelector;
 	
 	// GUI Buttons
-	private Button _hintButton;
-	private Button _resetButton;
-	private Button _exitButton;
-	private Button _musicButton;
+	protected Button _hintButton;
+	protected Button _resetButton;
+	protected Button _exitButton;
+	protected Button _musicButton;
 	
 	// Background textures
-	private TextureRegion _imgScoreBackground;
-	private TextureRegion _imgTimeBackground;
+	protected TextureRegion _imgScoreBackground;
+	protected TextureRegion _imgTimeBackground;
 	
 	// Fonts
-	private BitmapFont _fontTime;
-	private BitmapFont _fontScore;
-	private BitmapFont _fontText;
-	private BitmapFont _fontLoading;
+	protected BitmapFont _fontTime;
+	protected BitmapFont _fontScore;
+	protected BitmapFont _fontText;
+	protected BitmapFont _fontLoading;
 	public static final String FONT_CHARACTERS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789][_!$%#@|\\/?-+=()*&.;,{}\"�`'<>";
 	
 	// Starting time
-	private double _remainingTime;
+	protected double _remainingTime;
 	
 	// SFX and music
 	private Sound _match1SFX;
 	private Sound _match2SFX;
 	private Sound _match3SFX;
-	private Sound _selectSFX;
-	private Sound _fallSFX;
-	private Music _song;
+	protected Sound _selectSFX;
+	protected Sound _fallSFX;
+	protected Music _song;
 	
 	// Floating scores
-	private Array<FloatingScore> _floatingScores;
+	protected Array<FloatingScore> _floatingScores;
 	
 	// Particle effects
 	private ParticleEffect _effect;
-	private ParticleEffectPool _effectPool;
-	private Array<PooledEffect> _effects;
+	protected ParticleEffectPool _effectPool;
+	protected Array<PooledEffect> _effects;
 	
 	// Mouse pos
-	private Vector3 _mousePos = null;
+	protected Vector3 _mousePos = null;
 	
 	// Language manager
-	private LanguagesManager _lang;
+	protected LanguagesManager _lang;
 	
 	// Scores table
-	private ScoreTable _scoreTable;
+	protected ScoreTable _scoreTable;
 	
 	// Aux variables
-	private Color _imgColor = Color.WHITE.cpy();
+	protected Color _imgColor = Color.WHITE.cpy();
 	private Coord _coord = new Coord();
-	
+	SpriteBatch batch;
 	public StateGame(Freegemas freegemas) {
 		super(freegemas);
 		
@@ -572,7 +572,7 @@ public class StateGame extends State {
 	    }
 	}
 	
-	private void removeEndedParticles() {
+	protected void removeEndedParticles() {
 		int numParticles = _effects.size;
 		
 		for (int i = 0; i < numParticles; ++i) {
@@ -587,7 +587,7 @@ public class StateGame extends State {
 		}
 	}
 
-	private void removeEndedFloatingScores() {
+	protected void removeEndedFloatingScores() {
 		int numScores = _floatingScores.size;
 		
 		for (int i = 0; i < numScores; ++i) {
@@ -601,7 +601,7 @@ public class StateGame extends State {
 
 	@Override
 	public void render() {
-		SpriteBatch batch = _parent.getSpriteBatch();
+	 batch = _parent.getSpriteBatch();
 		
 		// STATE LOADING
 		if (_state == State.Loading) {
@@ -839,7 +839,11 @@ public class StateGame extends State {
 	public boolean keyUp(int arg0) {
 		return false;
 	}
-	
+	@Override
+	public boolean touchDragged(int arg0, int arg1, int arg2) {
+		
+		return false;
+	}
 	@Override
 	public boolean touchDown(int arg0, int arg1, int arg2, int arg3) {
 		if (arg3 == 0){ // Left mouse button clicked
@@ -873,7 +877,7 @@ public class StateGame extends State {
 	        else if (overGem((int)_mousePos.x, (int)_mousePos.y)) { // Si se puls� sobre una gema
 	            _selectSFX.play();
 
-	            if (_state == State.Wait) { // Si no hay ninguna gema marcada
+	            if (_state == State.Wait) { // If there is no marked gem
 	                _state = State.SelectedGem;
 	                Coord coord = getCoord((int)_mousePos.x, (int)_mousePos.y);
 	                _selectedSquareFirst.x = coord.x;
@@ -918,7 +922,7 @@ public class StateGame extends State {
 		return false;
 	}
 
-	private void gemsOutScreen() {
+	protected void gemsOutScreen() {
 	    for(int x = 0; x < 8; ++x){
 	        for(int y = 0; y < 8; ++y){
 	            _board.getSquare(x, y).mustFall = true;
@@ -951,22 +955,22 @@ public class StateGame extends State {
 	    resetGame();
 	}
 	
-	private boolean overGem(int mX, int mY) {
+	protected boolean overGem(int mX, int mY) {
 		return (mX > gemsInitial.x && mX < gemsInitial.x + 76 * 8 &&
 	            mY > gemsInitial.y && mY < gemsInitial.y + 76 * 8);
 	}
 	
-	private Coord getCoord(int mX, int mY) {
+	protected Coord getCoord(int mX, int mY) {
 		_coord.x = (mX - (int)gemsInitial.x) / 76;
 		_coord.y = (mY - (int)gemsInitial.y) / 76;
 		return _coord;
 	}
 	
-	private void redrawScoreBoard() {
+	protected void redrawScoreBoard() {
 		
 	}
 	
-	private void createFloatingScores() {
+	protected void createFloatingScores() {
 	    // For each match in the group of matched squares
 	    int numMatches = _groupedSquares.size;
 	    
@@ -1027,7 +1031,7 @@ public class StateGame extends State {
 		_showingHint = _animHintTotalTime;
 	}
 	
-	private void playMatchSound() {
+	protected void playMatchSound() {
 		if (_multiplier  == 1) {
 			_match1SFX.play();
 		}
@@ -1039,7 +1043,7 @@ public class StateGame extends State {
 		}
 	}
 	
-	private void resetGame() {
+	protected void resetGame() {
 		// Reset score
 		_points = 0;
 		
